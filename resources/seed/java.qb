@@ -1,0 +1,886 @@
+# Java Programming question bank
+@subject Java Programming | JV | #F97316 | Core Java, OOP, exceptions, collections, threads, GUI and JDBC
+
+# =====================================================================
+@subtopic Java Basics
+
+[EASY]
+Q: Which of these is NOT a primitive data type in Java?
+A) int
+B) boolean
+C) String
+D) char
+ANSWER: C
+EXPLAIN: String is a class in java.lang; the 8 primitives are byte, short, int, long, float, double, char and boolean.
+
+[EASY]
+Q: What is the size of an int in Java?
+A) 16 bits
+B) 32 bits
+C) 64 bits
+D) Depends on the operating system
+ANSWER: B
+EXPLAIN: Java fixes primitive sizes on every platform; int is always 32 bits.
+
+[EASY]
+Q: Which component converts Java source code (.java) into bytecode (.class)?
+A) JVM
+B) javac compiler
+C) JIT compiler
+D) Class loader
+ANSWER: B
+
+[EASY]
+Q: What is the correct signature of the entry point of a Java program?
+A) public void main(String args)
+B) public static void main(String[] args)
+C) static int main()
+D) public main(String[] args)
+ANSWER: B
+
+[EASY]
+Q: Which keyword makes a variable's value unchangeable once assigned?
+A) static
+B) const
+C) final
+D) volatile
+ANSWER: C
+EXPLAIN: const is a reserved word in Java but is not used.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        int x = 5;
+        int y = x++ + ++x;
+        System.out.println(x + " " + y);
+    }
+}
+END
+A) 7 12
+B) 6 11
+C) 7 11
+D) 6 12
+ANSWER: A
+HINT: x++ uses the old value then increments; ++x increments first then uses the new value.
+EXPLAIN: x++ gives 5 (x becomes 6), ++x makes x 7 and gives 7: y = 5 + 7 = 12, x = 7.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println(1 + 2 + "3" + 4 + 5);
+    }
+}
+END
+A) 15
+B) 3345
+C) 12345
+D) 339
+ANSWER: B
+HINT: + is evaluated left to right; once one operand is a String, + means concatenation.
+EXPLAIN: 1 + 2 = 3 (numbers), then "3" + "3" = "33", then "334", then "3345".
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        String a = "java";
+        String b = "java";
+        String c = new String("java");
+        System.out.println((a == b) + " " + (a == c) + " " + a.equals(c));
+    }
+}
+END
+A) true false true
+B) true true true
+C) false false true
+D) true false false
+ANSWER: A
+HINT: String literals are interned in the string pool; new String(...) always creates a new object.
+EXPLAIN: a and b refer to the same pooled object; c is a different object with the same characters, so == is false but equals() is true.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        Integer a = 127, b = 127;
+        Integer c = 128, d = 128;
+        System.out.println((a == b) + " " + (c == d));
+    }
+}
+END
+A) true false
+B) true true
+C) false false
+D) false true
+ANSWER: A
+HINT: Autoboxing uses Integer.valueOf(), which caches a certain range of values.
+EXPLAIN: Integer.valueOf caches -128..127, so a and b are the same object; 128 creates two different objects, so c == d compares two references and is false.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        byte b = (byte) 200;
+        int i = b & 0xFF;
+        char c = (char) ('A' + 2);
+        System.out.println(b + " " + i + " " + c);
+    }
+}
+END
+A) -56 200 C
+B) 200 200 C
+C) -56 -56 67
+D) -55 200 C
+ANSWER: A
+HINT: byte is signed 8-bit (range -128..127). Masking with 0xFF reinterprets the bits as unsigned.
+EXPLAIN: 200 - 256 = -56; b & 0xFF gives 200 again; 'A' + 2 = 67, cast to char is 'C'.
+
+# =====================================================================
+@subtopic OOP in Java
+
+[EASY]
+Q: Which keyword is used to inherit a class in Java?
+A) implements
+B) extends
+C) inherits
+D) super
+ANSWER: B
+
+[EASY]
+Q: Java does not support multiple inheritance of classes. How can a class get behaviour from several types?
+A) By extending several classes
+B) By implementing several interfaces
+C) By using the friend keyword
+D) It is impossible
+ANSWER: B
+
+[EASY]
+Q: Which keyword refers to the current object inside an instance method?
+A) self
+B) this
+C) super
+D) current
+ANSWER: B
+
+[EASY]
+Q: A constructor in Java:
+A) Has a return type of void
+B) Has the same name as the class and no return type
+C) Must be static
+D) Can be called like a normal method on an existing object
+ANSWER: B
+
+[EASY]
+Q: Which access modifier makes a member visible only inside its own class?
+A) public
+B) protected
+C) default (no modifier)
+D) private
+ANSWER: D
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+class A {
+    A() { System.out.print("A "); }
+}
+class B extends A {
+    B() { System.out.print("B "); }
+}
+class C extends B {
+    C() { System.out.print("C "); }
+}
+public class Main {
+    public static void main(String[] args) {
+        new C();
+    }
+}
+END
+A) C B A
+B) A B C
+C) C
+D) A C
+ANSWER: B
+HINT: Every constructor implicitly calls super() as its first statement.
+EXPLAIN: C() calls B(), which calls A(); A prints first, then B, then C.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+class Animal {
+    String sound() { return "..."; }
+}
+class Dog extends Animal {
+    String sound() { return "Woof"; }
+}
+public class Main {
+    public static void main(String[] args) {
+        Animal a = new Dog();
+        System.out.println(a.sound());
+    }
+}
+END
+A) ...
+B) Woof
+C) Compilation error
+D) null
+ANSWER: B
+HINT: Which method runs depends on the object's actual class, not the reference type.
+EXPLAIN: This is dynamic method dispatch (runtime polymorphism): Dog's overriding method runs.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+class Counter {
+    static int total = 0;
+    int mine = 0;
+    Counter() { total++; mine++; }
+}
+public class Main {
+    public static void main(String[] args) {
+        Counter a = new Counter();
+        Counter b = new Counter();
+        Counter c = new Counter();
+        System.out.println(Counter.total + " " + c.mine);
+    }
+}
+END
+A) 3 1
+B) 3 3
+C) 1 1
+D) 1 3
+ANSWER: A
+HINT: A static field is shared by all objects; an instance field belongs to each object separately.
+EXPLAIN: total is incremented by all three constructors (3), but each object's own mine is 1.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+class Parent {
+    static String who() { return "Parent"; }
+    String name() { return "Parent"; }
+}
+class Child extends Parent {
+    static String who() { return "Child"; }
+    String name() { return "Child"; }
+}
+public class Main {
+    public static void main(String[] args) {
+        Parent p = new Child();
+        System.out.println(p.who() + " " + p.name());
+    }
+}
+END
+A) Parent Child
+B) Child Child
+C) Parent Parent
+D) Child Parent
+ANSWER: A
+HINT: Static methods are hidden, not overridden; they are chosen by the reference type at compile time.
+EXPLAIN: p.who() binds to Parent.who() (static, by reference type); p.name() is dispatched at runtime to Child.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+class Base {
+    Base() { show(); }
+    void show() { System.out.print("Base "); }
+}
+class Derived extends Base {
+    int x = 10;
+    void show() { System.out.print("Derived " + x + " "); }
+}
+public class Main {
+    public static void main(String[] args) {
+        new Derived().show();
+    }
+}
+END
+A) Derived 0 Derived 10
+B) Base Derived 10
+C) Derived 10 Derived 10
+D) Base Base
+ANSWER: A
+HINT: The overridden method is called from the superclass constructor, before Derived's field initialisers run.
+EXPLAIN: During Base(), show() dispatches to Derived but x has not been initialised yet (0). After construction x = 10.
+
+# =====================================================================
+@subtopic Exception Handling
+
+[EASY]
+Q: Which block always executes whether or not an exception occurs?
+A) try
+B) catch
+C) finally
+D) throw
+ANSWER: C
+
+[EASY]
+Q: Which of these is a checked exception?
+A) NullPointerException
+B) ArithmeticException
+C) IOException
+D) ArrayIndexOutOfBoundsException
+ANSWER: C
+EXPLAIN: Checked exceptions extend Exception but not RuntimeException, and must be caught or declared.
+
+[EASY]
+Q: Which keyword is used in a method signature to declare that it may throw an exception?
+A) throw
+B) throws
+C) catch
+D) final
+ANSWER: B
+
+[EASY]
+Q: Dividing an int by zero in Java throws:
+A) NumberFormatException
+B) ArithmeticException
+C) IllegalStateException
+D) Nothing; the result is infinity
+ANSWER: B
+EXPLAIN: Integer division by zero throws ArithmeticException; floating-point division gives Infinity.
+
+[EASY]
+Q: What is the superclass of all exceptions and errors in Java?
+A) Exception
+B) Error
+C) Throwable
+D) Object only
+ANSWER: C
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        try {
+            int[] a = new int[2];
+            a[2] = 5;
+            System.out.print("A ");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.print("B ");
+        } finally {
+            System.out.print("C ");
+        }
+        System.out.print("D");
+    }
+}
+END
+A) A C D
+B) B C D
+C) B D
+D) A B C D
+ANSWER: B
+HINT: Valid indices of an array of length 2 are 0 and 1.
+EXPLAIN: a[2] throws before "A" is printed; the catch prints B, finally prints C, then execution continues with D.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    static int test() {
+        try {
+            return 1;
+        } finally {
+            System.out.print("finally ");
+        }
+    }
+    public static void main(String[] args) {
+        System.out.println(test());
+    }
+}
+END
+A) 1
+B) finally 1
+C) 1 finally
+D) Compilation error
+ANSWER: B
+HINT: finally runs before the method actually returns to its caller.
+EXPLAIN: The return value 1 is computed, finally prints, and only then main receives and prints 1.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        try {
+            Object s = "hello";
+            Integer n = (Integer) s;
+            System.out.println(n);
+        } catch (NumberFormatException e) {
+            System.out.println("NFE");
+        } catch (RuntimeException e) {
+            System.out.println(e.getClass().getSimpleName());
+        }
+    }
+}
+END
+A) NFE
+B) ClassCastException
+C) hello
+D) RuntimeException
+ANSWER: B
+HINT: A String object cannot be cast to Integer. Which catch block matches that exception?
+EXPLAIN: The cast throws ClassCastException, which is not an NFE but is a RuntimeException, so its simple name is printed.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    @SuppressWarnings("finally")
+    static int f() {
+        int x = 1;
+        try {
+            x = 2;
+            throw new RuntimeException();
+        } catch (RuntimeException e) {
+            x = 3;
+            return x;
+        } finally {
+            x = 4;
+        }
+    }
+    public static void main(String[] args) {
+        System.out.println(f());
+    }
+}
+END
+A) 3
+B) 4
+C) 2
+D) 1
+ANSWER: A
+HINT: The value to return is saved when the return statement executes; finally changes the variable afterwards.
+EXPLAIN: return x saves 3; finally sets the local x to 4 but does not change the already-saved return value.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+class Res implements AutoCloseable {
+    private final String n;
+    Res(String n) { this.n = n; System.out.print("open-" + n + " "); }
+    public void close() { System.out.print("close-" + n + " "); }
+}
+public class Main {
+    public static void main(String[] args) {
+        try (Res a = new Res("a"); Res b = new Res("b")) {
+            System.out.print("body ");
+            throw new IllegalStateException();
+        } catch (IllegalStateException e) {
+            System.out.print("caught");
+        }
+    }
+}
+END
+A) open-a open-b body close-b close-a caught
+B) open-a open-b body caught close-a close-b
+C) open-a open-b body close-a close-b caught
+D) open-a open-b body caught
+ANSWER: A
+HINT: Resources are closed automatically before the catch block runs, in reverse order of opening.
+EXPLAIN: try-with-resources closes b then a (reverse order) and only then hands the exception to catch.
+
+# =====================================================================
+@subtopic Collections & Generics
+
+[EASY]
+Q: Which collection does NOT allow duplicate elements?
+A) ArrayList
+B) LinkedList
+C) HashSet
+D) Vector
+ANSWER: C
+
+[EASY]
+Q: Which interface stores data as key-value pairs?
+A) List
+B) Set
+C) Map
+D) Queue
+ANSWER: C
+
+[EASY]
+Q: Which list gives O(1) access by index?
+A) ArrayList
+B) LinkedList
+C) Both equally
+D) Neither
+ANSWER: A
+EXPLAIN: ArrayList is backed by an array; LinkedList must walk the nodes.
+
+[EASY]
+Q: Which collection keeps its keys in sorted order?
+A) HashMap
+B) TreeMap
+C) LinkedHashMap
+D) Hashtable
+ANSWER: B
+EXPLAIN: TreeMap is a red-black tree that orders keys by natural order or a Comparator.
+
+[EASY]
+Q: Generics in Java mainly provide:
+A) Faster execution
+B) Compile-time type safety
+C) Multiple inheritance
+D) Automatic memory management
+ANSWER: B
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Integer> list = new ArrayList<>(Arrays.asList(10, 20, 30, 40));
+        list.remove(1);
+        list.remove(Integer.valueOf(40));
+        System.out.println(list);
+    }
+}
+END
+A) [10, 30]
+B) [20, 30]
+C) [10, 20, 30]
+D) [30, 40]
+ANSWER: A
+HINT: remove(int) removes by index, remove(Object) removes by value.
+EXPLAIN: remove(1) removes index 1 (20); remove(Integer 40) removes the value 40.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Set<String> s1 = new TreeSet<>(Arrays.asList("pear", "apple", "fig", "apple"));
+        Set<String> s2 = new LinkedHashSet<>(Arrays.asList("pear", "apple", "fig", "apple"));
+        System.out.println(s1 + " " + s2);
+    }
+}
+END
+A) [apple, fig, pear] [pear, apple, fig]
+B) [pear, apple, fig] [apple, fig, pear]
+C) [apple, apple, fig, pear] [pear, apple, fig]
+D) [apple, fig, pear] [apple, fig, pear]
+ANSWER: A
+HINT: Both remove the duplicate. TreeSet sorts; LinkedHashSet remembers insertion order.
+EXPLAIN: TreeSet orders alphabetically; LinkedHashSet keeps first-insertion order.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Map<Character, Integer> freq = new TreeMap<>();
+        for (char c : "banana".toCharArray()) {
+            freq.put(c, freq.getOrDefault(c, 0) + 1);
+        }
+        System.out.println(freq);
+    }
+}
+END
+A) {a=3, b=1, n=2}
+B) {b=1, a=3, n=2}
+C) {a=3, n=2, b=1}
+D) {a=1, b=1, n=1}
+ANSWER: A
+HINT: Count each character; a TreeMap prints keys in sorted order.
+EXPLAIN: banana has a x3, n x2, b x1; sorted keys give {a=3, b=1, n=2}.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        List<Integer> list = new ArrayList<>(Arrays.asList(1, 2, 3, 4));
+        try {
+            for (Integer x : list) {
+                if (x == 2) list.remove(x);
+            }
+            System.out.println(list);
+        } catch (Exception e) {
+            System.out.println(e.getClass().getSimpleName());
+        }
+    }
+}
+END
+A) [1, 3, 4]
+B) ConcurrentModificationException
+C) [1, 2, 3, 4]
+D) IndexOutOfBoundsException
+ANSWER: B
+HINT: The for-each loop uses an Iterator, which is fail-fast.
+EXPLAIN: Removing directly from the list changes its modCount; the iterator's next call detects this and throws ConcurrentModificationException. Use Iterator.remove() or removeIf instead.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+import java.util.*;
+
+public class Main {
+    static class Key {
+        int id;
+        Key(int id) { this.id = id; }
+        @Override public boolean equals(Object o) { return o instanceof Key && ((Key) o).id == id; }
+    }
+    public static void main(String[] args) {
+        Set<Key> set = new HashSet<>();
+        set.add(new Key(1));
+        set.add(new Key(1));
+        Key k = new Key(1);
+        System.out.println(set.size() + " " + k.equals(new Key(1)));
+    }
+}
+END
+A) 2 true
+B) 1 true
+C) 2 false
+D) 1 false
+ANSWER: A
+HINT: HashSet first compares hashCode() to find the bucket, then equals(). hashCode() was not overridden.
+EXPLAIN: Without hashCode(), the two keys have different identity hashes and land in different buckets, so both are stored even though equals() says they are equal.
+
+# =====================================================================
+@subtopic Multithreading
+
+[EASY]
+Q: Which two ways can be used to create a thread in Java?
+A) Extending Thread or implementing Runnable
+B) Extending Runnable or implementing Thread
+C) Using the thread keyword
+D) Only by using ExecutorService
+ANSWER: A
+
+[EASY]
+Q: Which method starts a new thread of execution?
+A) run()
+B) start()
+C) execute()
+D) begin()
+ANSWER: B
+EXPLAIN: Calling run() directly just runs the method in the current thread.
+
+[EASY]
+Q: The synchronized keyword is used to:
+A) Make code run faster
+B) Allow only one thread at a time into a block/method locked on the same object
+C) Create a new thread
+D) Stop a thread
+ANSWER: B
+
+[EASY]
+Q: Which method makes the current thread wait until another thread finishes?
+A) sleep()
+B) yield()
+C) join()
+D) notify()
+ANSWER: C
+
+[EASY]
+Q: In which state is a thread after it is created with new Thread(...) but before start() is called?
+A) RUNNABLE
+B) NEW
+C) BLOCKED
+D) TERMINATED
+ANSWER: B
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        Thread t = new Thread(() -> System.out.print("worker "));
+        t.run();
+        System.out.print(Thread.currentThread().getName());
+    }
+}
+END
+A) worker main
+B) main worker
+C) worker Thread-0
+D) The order is unpredictable
+ANSWER: A
+HINT: Is a new thread actually started here?
+EXPLAIN: run() is called directly, so the lambda runs synchronously in the main thread before the name is printed.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    static int count = 0;
+    static synchronized void inc() { count++; }
+    public static void main(String[] args) throws InterruptedException {
+        Thread a = new Thread(() -> { for (int i = 0; i < 1000; i++) inc(); });
+        Thread b = new Thread(() -> { for (int i = 0; i < 1000; i++) inc(); });
+        a.start(); b.start();
+        a.join(); b.join();
+        System.out.println(count);
+    }
+}
+END
+A) 2000
+B) A number between 1000 and 2000
+C) 1000
+D) 0
+ANSWER: A
+HINT: Is the increment protected, and does main wait for both threads?
+EXPLAIN: inc() is synchronized, so no update is lost, and join() waits for both threads: always 2000.
+
+[MEDIUM]
+Q: Two threads each run count++ 100000 times on a shared non-volatile int field WITHOUT synchronization. Why can the final value be less than 200000?
+A) count++ is a read-modify-write of three steps, so updates can be lost (race condition)
+B) Java limits int fields to 100000
+C) Threads cannot share fields
+D) The JVM runs only one thread at a time
+ANSWER: A
+HINT: Break count++ into the machine-level steps it needs.
+EXPLAIN: Two threads can both read the same old value and both write old + 1, losing one increment.
+
+[HARD]
+Q: Which statement about wait() and sleep() is correct?
+A) wait() releases the object's monitor lock; sleep() keeps any locks it holds
+B) sleep() releases all locks; wait() keeps them
+C) Both release locks
+D) wait() can be called without holding the lock
+ANSWER: A
+HINT: Think about why wait() must be called inside a synchronized block.
+EXPLAIN: wait() must be called while holding the monitor and releases it until notified; Thread.sleep() just pauses and keeps every lock held.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+import java.util.concurrent.*;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        Future<Integer> f1 = pool.submit(() -> 6 * 7);
+        Future<Integer> f2 = pool.submit(() -> f1.get() + 8);
+        System.out.println(f2.get());
+        pool.shutdown();
+    }
+}
+END
+A) 50
+B) 42
+C) 8
+D) The program deadlocks
+ANSWER: A
+HINT: Future.get() blocks until that task has finished. With two worker threads, can both tasks progress?
+EXPLAIN: f1 computes 42; f2 waits for it and returns 50. With 2 threads there is no deadlock (with 1 thread it would also finish because f1 is queued first).
+
+# =====================================================================
+@subtopic GUI (AWT/Swing) & JDBC
+
+[EASY]
+Q: Which package contains the Swing components such as JFrame and JButton?
+A) java.awt
+B) javax.swing
+C) java.swing
+D) java.gui
+ANSWER: B
+
+[EASY]
+Q: Which listener interface handles a button click in Swing/AWT?
+A) MouseMotionListener
+B) ActionListener
+C) KeyListener
+D) WindowListener
+ANSWER: B
+
+[EASY]
+Q: Which layout manager arranges components in five regions: NORTH, SOUTH, EAST, WEST and CENTER?
+A) FlowLayout
+B) GridLayout
+C) BorderLayout
+D) CardLayout
+ANSWER: C
+
+[EASY]
+Q: In JDBC, which interface is preferred for running parameterised SQL and prevents SQL injection?
+A) Statement
+B) PreparedStatement
+C) ResultSet
+D) DriverManager
+ANSWER: B
+
+[EASY]
+Q: Which method of DriverManager opens a database connection?
+A) openConnection()
+B) getConnection()
+C) connect()
+D) createConnection()
+ANSWER: B
+
+[MEDIUM]
+Q: Why should long-running work (e.g. a slow database query) NOT run inside a Swing button's ActionListener?
+A) ActionListeners cannot access databases
+B) Listeners run on the Event Dispatch Thread, so the UI freezes until the work finishes
+C) Swing automatically cancels long listeners
+D) It causes a compilation error
+ANSWER: B
+HINT: Which single thread both runs listeners and repaints the screen?
+EXPLAIN: Swing is single-threaded; blocking the EDT stops repainting and input. Use SwingWorker or a background thread.
+
+[MEDIUM]
+Q: Which layout manager is best for switching between several screens (panels) in the same window, one visible at a time?
+A) FlowLayout
+B) GridBagLayout
+C) CardLayout
+D) BoxLayout
+ANSWER: C
+HINT: Think of a deck where only the top card shows.
+EXPLAIN: CardLayout stacks components and shows one at a time; this quiz application uses it for its screens.
+
+[MEDIUM]
+Q: After executing a SELECT with a PreparedStatement, how do you iterate over the returned rows?
+A) while (rs.hasNext()) { ... }
+B) while (rs.next()) { ... }
+C) for (Row r : rs) { ... }
+D) rs.forEach(...)
+ANSWER: B
+HINT: The cursor starts BEFORE the first row.
+EXPLAIN: ResultSet.next() moves the cursor forward and returns false when there are no more rows.
+
+[HARD]
+Q: In JDBC, a transfer must debit one account and credit another atomically. Which sequence is correct?
+A) setAutoCommit(false); run both updates; commit(); on SQLException call rollback()
+B) Run both updates with auto-commit on; call rollback() if the second fails
+C) setAutoCommit(true); commit(); then run updates
+D) Use two separate connections, one per update
+ANSWER: A
+HINT: With auto-commit on, each statement is committed the moment it runs.
+EXPLAIN: Turning auto-commit off groups both statements in one transaction that is either committed together or rolled back together.
+
+[HARD]
+Q: In this Swing snippet, what text does the label show after the button is clicked three times?
+CODE java
+JLabel label = new JLabel("0");
+JButton button = new JButton("Add");
+int[] count = {0};
+button.addActionListener(e -> {
+    count[0] += 2;
+    label.setText(String.valueOf(count[0]));
+});
+END
+A) 6
+B) 3
+C) 2
+D) 0, because local variables cannot change inside a lambda
+ANSWER: A
+HINT: The array reference is effectively final, but its contents can still change.
+EXPLAIN: Lambdas can capture only effectively-final variables; using a one-element array is a common workaround. Each click adds 2: 2, 4, 6.

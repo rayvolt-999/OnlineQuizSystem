@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run Quiz App",
+      "request": "launch",
+      "mainClass": "com.quiz.Main",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "java",
+      "name": "Run Self-Tests",
+      "request": "launch",
+      "mainClass": "com.quiz.SelfTest",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

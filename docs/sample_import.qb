@@ -1,0 +1,84 @@
+# Sample question bank for the Admin Panel's "Import .qb" button.
+# Importing it creates a new subject "Software Engineering" with two subtopics.
+# Format: @subject Name | BADGE | #colour | description, then @subtopic, then questions.
+
+@subject Software Engineering | SE | #16A34A | SDLC models, requirements, testing and UML
+
+@subtopic SDLC Models
+
+[EASY]
+Q: Which SDLC model completes each phase fully before the next one starts?
+A) Waterfall
+B) Spiral
+C) Agile
+D) Prototype
+ANSWER: A
+EXPLAIN: Waterfall is linear and sequential; changes late in the project are expensive.
+
+[EASY]
+Q: Which model is driven by risk analysis in every cycle?
+A) Waterfall
+B) Spiral
+C) V-Model
+D) Big Bang
+ANSWER: B
+
+[MEDIUM]
+Q: In Scrum, what is the fixed-length period in which a usable increment is built?
+A) Sprint
+B) Epic
+C) Backlog
+D) Milestone
+ANSWER: A
+HINT: It usually lasts one to four weeks.
+EXPLAIN: Each sprint ends with a review and a retrospective.
+
+[HARD]
+Q: A project has unclear requirements, a high risk of technical failure and a large budget. Which model fits best?
+A) Spiral
+B) Waterfall
+C) Big Bang
+D) Code-and-fix
+ANSWER: A
+HINT: Which model evaluates risk before each iteration?
+EXPLAIN: The spiral model repeatedly plans, analyses risk, builds and evaluates, which suits large risky projects.
+
+@subtopic Software Testing
+
+[EASY]
+Q: Testing individual functions or classes in isolation is called:
+A) Unit testing
+B) System testing
+C) Acceptance testing
+D) Regression testing
+ANSWER: A
+
+[MEDIUM]
+Q: What does this Python test print?
+CODE python
+def grade(marks):
+    if marks >= 90: return "A"
+    if marks >= 75: return "B"
+    if marks >= 40: return "C"
+    return "F"
+
+cases = [89, 90, 39, 40, 75]
+print("".join(grade(m) for m in cases))
+END
+A) BAFCB
+B) AAFCB
+C) BAFFB
+D) BACCB
+ANSWER: A
+HINT: These inputs are boundary values. Check each comparison carefully at the edges.
+EXPLAIN: 89 -> B, 90 -> A, 39 -> F, 40 -> C, 75 -> B. Boundary value analysis tests exactly these edge cases.
+
+[HARD]
+Q: For the condition if (a > 0 && b > 0), how many test cases are needed for full condition/decision coverage at minimum?
+A) 2
+B) 1
+C) 3
+D) 4
+ANSWER: A
+HINT: You need each condition to be true once and false once, and the decision to be true once and false once.
+EXPLAIN: (a=1, b=1) makes everything true; (a=-1, b=-1) makes both conditions and the decision false.

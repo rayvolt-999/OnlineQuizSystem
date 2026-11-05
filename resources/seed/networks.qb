@@ -1,0 +1,587 @@
+# Computer Networks question bank
+@subject Computer Networks | CN | #0891B2 | Network models, data link, IP addressing, routing, TCP/UDP and protocols
+
+# =====================================================================
+@subtopic OSI & TCP/IP Models
+
+[EASY]
+Q: How many layers does the OSI reference model have?
+A) 4
+B) 5
+C) 7
+D) 8
+ANSWER: C
+
+[EASY]
+Q: Which OSI layer is responsible for routing packets between different networks?
+A) Data link layer
+B) Network layer
+C) Transport layer
+D) Session layer
+ANSWER: B
+
+[EASY]
+Q: Which OSI layer provides end-to-end delivery between processes using port numbers?
+A) Network layer
+B) Transport layer
+C) Physical layer
+D) Presentation layer
+ANSWER: B
+
+[EASY]
+Q: The data unit at the data link layer is called a:
+A) Segment
+B) Packet
+C) Frame
+D) Bit
+ANSWER: C
+EXPLAIN: Transport: segment; network: packet; data link: frame; physical: bits.
+
+[EASY]
+Q: Which OSI layer handles encryption, compression and data format translation?
+A) Application
+B) Presentation
+C) Session
+D) Transport
+ANSWER: B
+
+[MEDIUM]
+Q: When a web browser sends an HTTP request, in what order are headers added as the data goes DOWN the TCP/IP stack?
+A) HTTP data -> TCP header -> IP header -> Ethernet header/trailer
+B) Ethernet -> IP -> TCP -> HTTP
+C) IP header -> TCP header -> Ethernet header -> HTTP
+D) TCP header -> HTTP -> IP header -> Ethernet
+ANSWER: A
+HINT: Each layer wraps (encapsulates) whatever it receives from the layer above.
+EXPLAIN: The application data is wrapped by TCP (segment), then IP (packet), then Ethernet (frame).
+
+[MEDIUM]
+Q: Which device operates at which layer? Choose the correct mapping.
+A) Hub: physical, Switch: data link, Router: network
+B) Hub: data link, Switch: network, Router: transport
+C) Hub: network, Switch: physical, Router: data link
+D) All three work at the network layer
+ANSWER: A
+HINT: Which device only repeats signals, which reads MAC addresses, and which reads IP addresses?
+EXPLAIN: A hub repeats bits, a switch forwards frames using MAC addresses, a router forwards packets using IP addresses.
+
+[MEDIUM]
+Q: The TCP/IP model's Application layer combines which OSI layers?
+A) Application, Presentation and Session
+B) Application and Transport
+C) Session and Transport
+D) Only Application
+ANSWER: A
+HINT: TCP/IP has 4 layers; its top layer absorbs the three top OSI layers.
+EXPLAIN: TCP/IP layers: Application (OSI 5-7), Transport (4), Internet (3), Network Access/Link (1-2).
+
+[HARD]
+Q: A 1500-byte IP datagram (20-byte header) must cross a link with MTU 620 bytes. Into how many fragments is it split, and what is the fragment offset field of the second fragment?
+A) 3 fragments; offset 75
+B) 3 fragments; offset 600
+C) 2 fragments; offset 75
+D) 3 fragments; offset 74
+ANSWER: A
+HINT: Each fragment can carry 620 - 20 = 600 data bytes (a multiple of 8). The offset is counted in 8-byte units.
+EXPLAIN: Data = 1480 bytes -> 600 + 600 + 280, so 3 fragments. The second starts at byte 600, and 600 / 8 = 75.
+
+[HARD]
+Q: A message of 4000 bits is sent over a 1 Mbps link that is 2000 km long (propagation speed 2 x 10^8 m/s). What is the total time until the last bit arrives?
+A) 14 ms
+B) 4 ms
+C) 10 ms
+D) 6 ms
+ANSWER: A
+HINT: Total = transmission delay (size / bandwidth) + propagation delay (distance / speed).
+EXPLAIN: Transmission = 4000 / 10^6 = 4 ms; propagation = 2 x 10^6 m / 2 x 10^8 m/s = 10 ms; total 14 ms.
+
+# =====================================================================
+@subtopic Data Link Layer
+
+[EASY]
+Q: How many bits long is a MAC address?
+A) 32
+B) 48
+C) 64
+D) 128
+ANSWER: B
+
+[EASY]
+Q: Which protocol maps an IP address to a MAC address on a local network?
+A) DNS
+B) ARP
+C) DHCP
+D) ICMP
+ANSWER: B
+
+[EASY]
+Q: Which access method does classic Ethernet use to handle collisions?
+A) CSMA/CD
+B) CSMA/CA
+C) Token passing
+D) Polling
+ANSWER: A
+EXPLAIN: Wi-Fi uses CSMA/CA (collision avoidance) instead.
+
+[EASY]
+Q: Which technique detects errors using polynomial division?
+A) Parity bit
+B) Checksum
+C) CRC (Cyclic Redundancy Check)
+D) Hamming distance only
+ANSWER: C
+
+[EASY]
+Q: A switch learns which port each device is on by reading the frame's:
+A) Destination IP address
+B) Source MAC address
+C) TCP port number
+D) TTL field
+ANSWER: B
+
+[MEDIUM]
+Q: Using even parity, what parity bit is added to the 7-bit data 1011001?
+A) 0
+B) 1
+C) 2
+D) No bit is needed
+ANSWER: A
+HINT: Count the 1s. Even parity makes the TOTAL number of 1s even.
+EXPLAIN: 1011001 has four 1s, which is already even, so the parity bit is 0.
+
+[MEDIUM]
+Q: The data 1101 is sent with CRC generator 1011 (x^3 + x + 1). What is the 3-bit CRC appended to the data?
+A) 001
+B) 011
+C) 101
+D) 110
+ANSWER: A
+HINT: Append three 0s (1101000), then perform modulo-2 (XOR) division by 1011; the remainder is the CRC.
+EXPLAIN: 1101000 XOR-divided by 1011 leaves remainder 001, so 1101001 is transmitted.
+
+[MEDIUM]
+Q: In Stop-and-Wait ARQ, why are frames numbered with sequence numbers 0 and 1?
+A) To detect duplicate frames when an acknowledgement is lost
+B) To encrypt the frame
+C) To find the shortest path
+D) To compress the data
+ANSWER: A
+HINT: What does the receiver see if the sender re-transmits a frame that actually arrived?
+EXPLAIN: If an ACK is lost, the sender re-sends the same frame; the alternating number lets the receiver recognise and discard the duplicate.
+
+[HARD]
+Q: In Go-Back-N ARQ with 3-bit sequence numbers, what is the maximum sender window size?
+A) 7
+B) 8
+C) 4
+D) 3
+ANSWER: A
+HINT: With m bits there are 2^m sequence numbers. Selective Repeat uses 2^(m-1).
+EXPLAIN: Go-Back-N allows 2^m - 1 = 7 outstanding frames; with 8 the receiver could not tell new frames from retransmissions.
+
+[HARD]
+Q: What is the Hamming distance between the codewords 10110110 and 11010011?
+A) 4
+B) 3
+C) 5
+D) 2
+ANSWER: A
+HINT: XOR the two codewords and count the 1 bits.
+EXPLAIN: 10110110 XOR 11010011 = 01100101, which has four 1s.
+
+# =====================================================================
+@subtopic IP Addressing & Subnetting
+
+[EASY]
+Q: How many bits are in an IPv4 address?
+A) 16
+B) 32
+C) 64
+D) 128
+ANSWER: B
+
+[EASY]
+Q: How many bits are in an IPv6 address?
+A) 32
+B) 48
+C) 64
+D) 128
+ANSWER: D
+
+[EASY]
+Q: Which of these is a private IPv4 address?
+A) 8.8.8.8
+B) 192.168.1.10
+C) 172.32.0.1
+D) 11.0.0.1
+ANSWER: B
+EXPLAIN: Private ranges are 10.0.0.0/8, 172.16.0.0/12 (172.16-172.31) and 192.168.0.0/16.
+
+[EASY]
+Q: What is the default subnet mask of a class C network?
+A) 255.0.0.0
+B) 255.255.0.0
+C) 255.255.255.0
+D) 255.255.255.255
+ANSWER: C
+
+[EASY]
+Q: Which address is used to test the local machine's own network stack (loopback)?
+A) 0.0.0.0
+B) 127.0.0.1
+C) 255.255.255.255
+D) 192.168.0.1
+ANSWER: B
+
+[MEDIUM]
+Q: How many usable host addresses does a /26 subnet have?
+A) 62
+B) 64
+C) 30
+D) 126
+ANSWER: A
+HINT: Host bits = 32 - 26. Subtract the network and broadcast addresses.
+EXPLAIN: 2^6 = 64 addresses, minus 2 = 62 usable hosts.
+
+[MEDIUM]
+Q: What does this Python code print?
+CODE python
+import ipaddress
+net = ipaddress.ip_network("192.168.10.64/27")
+print(net.network_address, net.broadcast_address, net.num_addresses - 2)
+END
+A) 192.168.10.64 192.168.10.95 30
+B) 192.168.10.64 192.168.10.127 62
+C) 192.168.10.65 192.168.10.94 30
+D) 192.168.10.0 192.168.10.255 254
+ANSWER: A
+HINT: A /27 block contains 32 addresses starting at the network address.
+EXPLAIN: 64 + 32 - 1 = 95 is the broadcast; 32 - 2 = 30 usable hosts.
+
+[MEDIUM]
+Q: The host 10.20.30.140 has subnet mask 255.255.255.192. What is its network address?
+A) 10.20.30.128
+B) 10.20.30.0
+C) 10.20.30.140
+D) 10.20.30.192
+ANSWER: A
+HINT: AND the last octet with 192. Block size is 256 - 192 = 64.
+EXPLAIN: Blocks start at 0, 64, 128, 192; 140 falls in the block starting at 128.
+
+[HARD]
+Q: An organisation has 200.10.5.0/24 and needs at least 6 subnets of equal size. What is the new prefix length and how many usable hosts does each subnet have?
+A) /27 with 30 hosts
+B) /26 with 62 hosts
+C) /29 with 6 hosts
+D) /27 with 32 hosts
+ANSWER: A
+HINT: Borrow the fewest host bits n such that 2^n >= 6.
+EXPLAIN: 2^3 = 8 >= 6, so borrow 3 bits: /27. Each subnet has 2^5 - 2 = 30 usable hosts.
+
+[HARD]
+Q: What does this Python code print?
+CODE python
+import ipaddress
+nets = [ipaddress.ip_network(n) for n in ("10.1.0.0/24", "10.1.1.0/24", "10.1.2.0/24", "10.1.3.0/24")]
+print(list(ipaddress.collapse_addresses(nets)))
+END
+A) [IPv4Network('10.1.0.0/22')]
+B) [IPv4Network('10.1.0.0/23'), IPv4Network('10.1.2.0/23')]
+C) [IPv4Network('10.1.0.0/16')]
+D) [IPv4Network('10.1.0.0/24')]
+ANSWER: A
+HINT: Four consecutive, aligned /24 blocks can be summarised (supernetted). 4 = 2^2.
+EXPLAIN: Route summarisation removes 2 bits from the prefix: 10.1.0.0/22 covers 10.1.0.0 - 10.1.3.255.
+
+# =====================================================================
+@subtopic Routing
+
+[EASY]
+Q: Which device forwards packets between different networks?
+A) Hub
+B) Repeater
+C) Router
+D) Switch (layer 2)
+ANSWER: C
+
+[EASY]
+Q: RIP is an example of which type of routing protocol?
+A) Link-state
+B) Distance-vector
+C) Path-vector
+D) Static
+ANSWER: B
+
+[EASY]
+Q: OSPF uses which algorithm to compute shortest paths?
+A) Bellman-Ford
+B) Dijkstra's algorithm
+C) Kruskal's algorithm
+D) Binary search
+ANSWER: B
+
+[EASY]
+Q: Which protocol is used for routing between different autonomous systems on the Internet?
+A) RIP
+B) OSPF
+C) BGP
+D) ARP
+ANSWER: C
+
+[EASY]
+Q: What is the purpose of the TTL field in the IP header?
+A) To store the time of day
+B) To stop packets from looping forever; each router decrements it
+C) To encrypt the packet
+D) To identify the application
+ANSWER: B
+
+[MEDIUM]
+Q: A router has routes 10.0.0.0/8 -> R1, 10.1.0.0/16 -> R2 and 10.1.2.0/24 -> R3. Where is a packet to 10.1.2.9 sent?
+A) R3
+B) R2
+C) R1
+D) It is dropped
+ANSWER: A
+HINT: Routers use the longest prefix match.
+EXPLAIN: All three routes match, but /24 is the most specific, so R3 is chosen.
+
+[MEDIUM]
+Q: What is the maximum hop count in RIP before a destination is considered unreachable?
+A) 15 (16 means unreachable)
+B) 255
+C) 7
+D) 64
+ANSWER: A
+HINT: RIP uses a small infinity to limit the count-to-infinity problem.
+EXPLAIN: A metric of 16 is treated as infinity, which limits RIP to small networks.
+
+[MEDIUM]
+Q: What does NAT (Network Address Translation) do on a home router?
+A) Translates private IP addresses (and ports) to the router's public IP for Internet traffic
+B) Converts domain names to IP addresses
+C) Assigns MAC addresses
+D) Encrypts all traffic
+ANSWER: A
+HINT: Many devices at home share one public address.
+EXPLAIN: NAT/PAT rewrites source addresses and ports, keeping a translation table to map replies back.
+
+[HARD]
+Q: What is the "count to infinity" problem and which technique reduces it in distance-vector routing?
+A) Routers slowly increase the cost to an unreachable network by exchanging stale routes; split horizon with poison reverse reduces it
+B) Packets loop forever; it is fixed by increasing TTL
+C) Link-state databases grow forever; it is fixed by OSPF areas
+D) Routing tables become empty; it is fixed by static routes
+ANSWER: A
+HINT: Think about two neighbours that each believe the other still has a path to a failed link.
+EXPLAIN: Each router advertises the route back to the router it learned it from, so costs keep increasing; split horizon stops advertising a route back on the interface it was learned on.
+
+[HARD]
+Q: Using Dijkstra from A on the graph A-B (4), A-C (1), C-B (2), B-D (1), C-D (5), what is the shortest distance from A to D?
+A) 4
+B) 5
+C) 6
+D) 3
+ANSWER: A
+HINT: Relax edges starting from the nearest unvisited node, C (distance 1).
+EXPLAIN: A->C = 1, C->B gives B = 3, B->D gives D = 4, which beats A->C->D = 6.
+
+# =====================================================================
+@subtopic Transport Layer
+
+[EASY]
+Q: Which protocol provides reliable, connection-oriented delivery?
+A) UDP
+B) TCP
+C) IP
+D) ICMP
+ANSWER: B
+
+[EASY]
+Q: Which transport protocol is preferred for live video calls and online gaming?
+A) TCP
+B) UDP
+C) FTP
+D) SMTP
+ANSWER: B
+EXPLAIN: UDP has no retransmission delays; a late packet is useless for real-time media.
+
+[EASY]
+Q: How many steps are in TCP's connection establishment handshake?
+A) 2
+B) 3
+C) 4
+D) 1
+ANSWER: B
+EXPLAIN: SYN, SYN-ACK, ACK.
+
+[EASY]
+Q: What uniquely identifies a process on a host for the transport layer?
+A) MAC address
+B) Port number
+C) Subnet mask
+D) TTL
+ANSWER: B
+
+[EASY]
+Q: What is the size of the UDP header?
+A) 8 bytes
+B) 20 bytes
+C) 32 bytes
+D) 40 bytes
+ANSWER: A
+EXPLAIN: The basic TCP header is 20 bytes.
+
+[MEDIUM]
+Q: Which mechanism prevents a fast sender from overflowing a slow RECEIVER's buffer in TCP?
+A) Flow control using the receive window (rwnd)
+B) Congestion control
+C) Checksum
+D) Three-way handshake
+ANSWER: A
+HINT: The receiver advertises how much free buffer space it has.
+EXPLAIN: Flow control protects the receiver; congestion control protects the NETWORK.
+
+[MEDIUM]
+Q: A TCP segment carries sequence number 1000 and 500 bytes of data. What acknowledgement number does the receiver send if it was received correctly?
+A) 1500
+B) 1501
+C) 1000
+D) 500
+ANSWER: A
+HINT: The ACK number is the next byte the receiver expects.
+EXPLAIN: Bytes 1000-1499 were received, so the receiver expects byte 1500 next.
+
+[MEDIUM]
+Q: What does this Python code print?
+CODE python
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+print(s.type == socket.SOCK_DGRAM, s.family == socket.AF_INET)
+s.close()
+END
+A) True True
+B) False True
+C) True False
+D) False False
+ANSWER: A
+HINT: SOCK_DGRAM is the socket type used for UDP; AF_INET means IPv4.
+EXPLAIN: The socket was created as an IPv4 datagram (UDP) socket, so both checks are True.
+
+[HARD]
+Q: In TCP Reno, the congestion window is 16 MSS when three duplicate ACKs arrive. What happens?
+A) ssthresh = 8, cwnd set to about 8 (fast recovery) and grows linearly
+B) cwnd resets to 1 MSS and slow start begins
+C) cwnd doubles to 32
+D) The connection is closed
+ANSWER: A
+HINT: Three duplicate ACKs mean packets are still flowing, so the reaction is milder than a timeout.
+EXPLAIN: Reno halves the window (ssthresh = cwnd/2 = 8) and continues with congestion avoidance; a timeout would reset cwnd to 1.
+
+[HARD]
+Q: Why does the side that closes a TCP connection first stay in the TIME_WAIT state for 2 x MSL?
+A) To make sure the final ACK can be re-sent if lost, and that old duplicate segments expire before the port is reused
+B) To wait for the DNS cache to clear
+C) To complete the three-way handshake
+D) To let the congestion window reset
+ANSWER: A
+HINT: What if the last ACK is lost and the other side re-sends its FIN?
+EXPLAIN: TIME_WAIT lets the closer re-acknowledge a retransmitted FIN and prevents delayed packets from an old connection being mistaken for a new one.
+
+# =====================================================================
+@subtopic Application Layer
+
+[EASY]
+Q: What is the default port for HTTPS?
+A) 80
+B) 21
+C) 443
+D) 25
+ANSWER: C
+
+[EASY]
+Q: DNS translates:
+A) IP addresses to MAC addresses
+B) Domain names to IP addresses
+C) Ports to services
+D) Emails to IP addresses
+ANSWER: B
+
+[EASY]
+Q: Which protocol is used to SEND email between servers?
+A) POP3
+B) IMAP
+C) SMTP
+D) FTP
+ANSWER: C
+
+[EASY]
+Q: Which protocol automatically assigns IP addresses to hosts on a network?
+A) DHCP
+B) DNS
+C) ARP
+D) SNMP
+ANSWER: A
+
+[EASY]
+Q: What does HTTP status code 404 mean?
+A) OK
+B) Not Found
+C) Server Error
+D) Moved Permanently
+ANSWER: B
+
+[MEDIUM]
+Q: In what order do the four DHCP messages occur when a client joins a network?
+A) Discover, Offer, Request, Acknowledge
+B) Request, Offer, Discover, Acknowledge
+C) Offer, Discover, Acknowledge, Request
+D) Discover, Request, Offer, Acknowledge
+ANSWER: A
+HINT: The client first has to find a server before it can ask for a particular address.
+EXPLAIN: Remembered as DORA: Discover (broadcast), Offer, Request, Ack.
+
+[MEDIUM]
+Q: Which HTTP method is idempotent and is used to fully replace a resource?
+A) PUT
+B) POST
+C) PATCH
+D) CONNECT
+ANSWER: A
+HINT: Idempotent means sending the same request twice has the same effect as sending it once.
+EXPLAIN: PUT replaces the resource, so repeating it changes nothing further; POST usually creates a new resource every time.
+
+[MEDIUM]
+Q: What does this Python code print?
+CODE python
+from urllib.parse import urlparse
+u = urlparse("https://exam.college.edu:8443/results/view?roll=21&sem=5#top")
+print(u.scheme, u.hostname, u.port, u.path, u.query)
+END
+A) https exam.college.edu 8443 /results/view roll=21&sem=5
+B) https college.edu 443 /results roll=21
+C) https exam.college.edu 443 /results/view roll=21&sem=5#top
+D) http exam.college.edu 8443 results/view sem=5
+ANSWER: A
+HINT: The port is written explicitly after the colon; the fragment after # is not part of the query.
+EXPLAIN: urlparse splits a URL into scheme, network location (host and port), path, query and fragment.
+
+[HARD]
+Q: A browser resolves www.example.com for the first time with empty caches. Which sequence of DNS servers is contacted by the local recursive resolver?
+A) Root server -> .com TLD server -> example.com authoritative server
+B) example.com server -> .com server -> root server
+C) Only the root server
+D) The web server itself
+ANSWER: A
+HINT: Iterative resolution walks the DNS tree from the top.
+EXPLAIN: The root refers the resolver to the .com servers, which refer it to example.com's authoritative name server, which returns the A record.
+
+[HARD]
+Q: Which statement about HTTP/1.1 persistent connections is correct?
+A) Several requests and responses can reuse one TCP connection, avoiding a new handshake per object
+B) Each object needs a new TCP connection
+C) They use UDP instead of TCP
+D) They encrypt traffic automatically
+ANSWER: A
+HINT: Count the round trips for a page with 10 images with and without reusing the connection.
+EXPLAIN: Persistent (keep-alive) connections save the TCP handshake and slow-start costs for every object after the first.

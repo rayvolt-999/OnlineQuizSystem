@@ -1,0 +1,9 @@
+# Bundled question banks, loaded in this order on first start
+dsa.qb
+java.qb
+python.qb
+oop.qb
+dbms.qb
+os.qb
+networks.qb
+linux.qb

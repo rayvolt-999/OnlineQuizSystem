@@ -1,0 +1,863 @@
+# OOP Concepts question bank (language-independent ideas, examples in C++ and Java)
+@subject OOP Concepts | OOP | #DB2777 | Classes, encapsulation, inheritance, polymorphism, object lifetime and design principles
+
+# =====================================================================
+@subtopic Classes & Objects
+
+[EASY]
+Q: A class is best described as:
+A) An instance of an object
+B) A blueprint that defines data and behaviour for objects
+C) A function that returns a value
+D) A variable stored in memory
+ANSWER: B
+
+[EASY]
+Q: An object is:
+A) A blueprint
+B) An instance of a class
+C) A keyword
+D) A data type only for numbers
+ANSWER: B
+
+[EASY]
+Q: Which of these is NOT one of the four pillars of OOP?
+A) Encapsulation
+B) Inheritance
+C) Compilation
+D) Polymorphism
+ANSWER: C
+EXPLAIN: The four pillars are encapsulation, abstraction, inheritance and polymorphism.
+
+[EASY]
+Q: The variables declared inside a class (not inside a method) are called:
+A) Local variables
+B) Data members / fields / attributes
+C) Parameters
+D) Arguments
+ANSWER: B
+
+[EASY]
+Q: In C++, members of a class are by default:
+A) public
+B) private
+C) protected
+D) static
+ANSWER: B
+EXPLAIN: In a C++ struct the default is public; in a class it is private.
+
+[MEDIUM]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class Box {
+public:
+    int w;
+    Box(int w) : w(w) {}
+};
+
+int main() {
+    Box a(5);
+    Box b = a;
+    b.w = 9;
+    Box* p = &a;
+    p->w += 1;
+    cout << a.w << " " << b.w << endl;
+    return 0;
+}
+END
+A) 6 9
+B) 9 9
+C) 5 9
+D) 6 6
+ANSWER: A
+HINT: In C++, Box b = a makes a COPY; a pointer refers to the original object.
+EXPLAIN: b is an independent copy, so changing b does not affect a. p points to a, so a.w becomes 6.
+
+[MEDIUM]
+Q: What is the output of this Java program?
+CODE java
+class Box {
+    int w;
+    Box(int w) { this.w = w; }
+}
+public class Main {
+    public static void main(String[] args) {
+        Box a = new Box(5);
+        Box b = a;
+        b.w = 9;
+        System.out.println(a.w + " " + (a == b));
+    }
+}
+END
+A) 9 true
+B) 5 false
+C) 9 false
+D) 5 true
+ANSWER: A
+HINT: In Java, object variables hold references. Compare with how C++ copies objects.
+EXPLAIN: b = a copies the reference, so both names refer to one object; the change through b is visible through a.
+
+[MEDIUM]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class Point {
+    int x, y;
+public:
+    Point(int x = 0, int y = 0) : x(x), y(y) {}
+    int sum() const { return x + y; }
+};
+
+int main() {
+    Point p1, p2(3), p3(3, 4);
+    cout << p1.sum() << " " << p2.sum() << " " << p3.sum() << endl;
+    return 0;
+}
+END
+A) 0 3 7
+B) 0 0 7
+C) Compilation error
+D) 0 6 7
+ANSWER: A
+HINT: Default arguments fill in any missing parameters from the right.
+EXPLAIN: p1 is (0,0), p2 is (3,0), p3 is (3,4), giving sums 0, 3 and 7.
+
+[HARD]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class Counter {
+public:
+    static int alive;
+    Counter() { alive++; }
+    ~Counter() { alive--; }
+};
+int Counter::alive = 0;
+
+int main() {
+    Counter a;
+    {
+        Counter b, c;
+        cout << Counter::alive << " ";
+    }
+    Counter* d = new Counter();
+    cout << Counter::alive << " ";
+    delete d;
+    cout << Counter::alive << endl;
+    return 0;
+}
+END
+A) 3 2 1
+B) 3 4 3
+C) 3 2 2
+D) 1 2 1
+ANSWER: A
+HINT: Objects declared inside { } are destroyed when the block ends; heap objects only when deleted.
+EXPLAIN: a, b, c alive = 3; after the block b and c are destroyed (1), d is created (2); delete d leaves 1.
+
+[HARD]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class A {
+public:
+    int v;
+    A(int v) : v(v) {}
+    A(const A& o) : v(o.v * 10) { cout << "copy "; }
+};
+
+void byValue(A x) { cout << x.v << " "; }
+void byRef(A& x) { cout << x.v << " "; }
+
+int main() {
+    A a(2);
+    byRef(a);
+    byValue(a);
+    cout << a.v << endl;
+    return 0;
+}
+END
+A) 2 copy 20 2
+B) 2 copy 2 2
+C) 20 copy 20 2
+D) 2 20 copy 2
+ANSWER: A
+HINT: Passing by value invokes the copy constructor; passing by reference does not.
+EXPLAIN: byRef prints 2 with no copy. byValue copies a (printing "copy" and setting v = 20) and prints 20. a itself is unchanged.
+
+# =====================================================================
+@subtopic Encapsulation & Abstraction
+
+[EASY]
+Q: Encapsulation means:
+A) Wrapping data and the methods that operate on it into a single unit and restricting direct access
+B) Creating many objects
+C) Inheriting from multiple classes
+D) Converting code to machine code
+ANSWER: A
+
+[EASY]
+Q: Abstraction means:
+A) Showing only essential features and hiding implementation details
+B) Copying objects
+C) Running code faster
+D) Using only private variables
+ANSWER: A
+
+[EASY]
+Q: Getter and setter methods are mainly used to support:
+A) Inheritance
+B) Encapsulation
+C) Recursion
+D) Multithreading
+ANSWER: B
+
+[EASY]
+Q: In Java, which keyword declares a class that cannot be instantiated and may contain unimplemented methods?
+A) final
+B) abstract
+C) static
+D) private
+ANSWER: B
+
+[EASY]
+Q: In C++, a class becomes abstract when it has at least one:
+A) Private member
+B) Pure virtual function (= 0)
+C) Static member
+D) Constructor
+ANSWER: B
+
+[MEDIUM]
+Q: What is the output of this Java program?
+CODE java
+class Account {
+    private double balance;
+    public boolean withdraw(double amt) {
+        if (amt <= 0 || amt > balance) return false;
+        balance -= amt;
+        return true;
+    }
+    public void deposit(double amt) { if (amt > 0) balance += amt; }
+    public double getBalance() { return balance; }
+}
+public class Main {
+    public static void main(String[] args) {
+        Account a = new Account();
+        a.deposit(500);
+        a.deposit(-100);
+        boolean ok1 = a.withdraw(700);
+        boolean ok2 = a.withdraw(200);
+        System.out.println(ok1 + " " + ok2 + " " + a.getBalance());
+    }
+}
+END
+A) false true 300.0
+B) true true -400.0
+C) false true 200.0
+D) false false 500.0
+ANSWER: A
+HINT: The class validates every change before touching the private field.
+EXPLAIN: The negative deposit is ignored, the 700 withdrawal is refused, the 200 withdrawal succeeds: 500 - 200 = 300.0.
+
+[MEDIUM]
+Q: Which statement about a Java interface (Java 8+) and an abstract class is correct?
+A) A class can implement many interfaces but extend only one abstract class
+B) An abstract class cannot have constructors
+C) Interfaces can have instance fields that change per object
+D) A class can extend many abstract classes
+ANSWER: A
+HINT: Think about which of them would bring the multiple-inheritance diamond problem with state.
+EXPLAIN: Interfaces carry no instance state, so multiple implementation is safe; abstract classes can have constructors and state but only single inheritance.
+
+[MEDIUM]
+Q: What happens when this Java code is compiled?
+CODE java
+abstract class Shape {
+    abstract double area();
+}
+public class Main {
+    public static void main(String[] args) {
+        Shape s = new Shape();
+        System.out.println(s.area());
+    }
+}
+END
+A) Compilation error: Shape is abstract; cannot be instantiated
+B) It prints 0.0
+C) It throws a runtime exception
+D) It prints null
+ANSWER: A
+HINT: Can you create an object of an abstract class directly?
+EXPLAIN: An abstract class may only be instantiated through a concrete subclass (or an anonymous class that implements area()).
+
+[HARD]
+Q: Why is returning a direct reference to a private mutable list from a getter a problem?
+CODE java
+class Course {
+    private final List<String> students = new ArrayList<>();
+    public List<String> getStudents() { return students; }
+}
+END
+A) Callers can modify the internal list (e.g. clear it), breaking encapsulation; return an unmodifiable view or a copy instead
+B) It causes a compilation error because the field is final
+C) Lists cannot be returned from methods
+D) It is fine because the field is private
+ANSWER: A
+HINT: final only stops the field from pointing to a different list.
+EXPLAIN: The caller gets the same list object and can call add/clear on it. Use Collections.unmodifiableList(students) or new ArrayList<>(students).
+
+[HARD]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class Shape {
+public:
+    virtual double area() const = 0;
+    virtual ~Shape() {}
+};
+class Sq : public Shape {
+    double s;
+public:
+    Sq(double s) : s(s) {}
+    double area() const override { return s * s; }
+};
+class Rect : public Shape {
+    double w, h;
+public:
+    Rect(double w, double h) : w(w), h(h) {}
+    double area() const override { return w * h; }
+};
+
+int main() {
+    Shape* shapes[] = { new Sq(3), new Rect(2, 5), new Sq(1) };
+    double total = 0;
+    for (Shape* s : shapes) { total += s->area(); delete s; }
+    cout << total << endl;
+    return 0;
+}
+END
+A) 20
+B) 19
+C) 10
+D) Compilation error
+ANSWER: A
+HINT: Each call to area() goes to the actual object's override through the virtual table.
+EXPLAIN: 9 + 10 + 1 = 20. Shape cannot be instantiated, but pointers to it can hold concrete objects.
+
+# =====================================================================
+@subtopic Inheritance
+
+[EASY]
+Q: Inheritance represents which kind of relationship?
+A) has-a
+B) is-a
+C) uses-a
+D) part-of
+ANSWER: B
+EXPLAIN: Composition represents has-a.
+
+[EASY]
+Q: The class that is inherited FROM is called the:
+A) Derived class
+B) Base (parent / super) class
+C) Child class
+D) Friend class
+ANSWER: B
+
+[EASY]
+Q: Which type of inheritance is NOT supported for classes in Java but is supported in C++?
+A) Single
+B) Multilevel
+C) Multiple
+D) Hierarchical
+ANSWER: C
+
+[EASY]
+Q: In Java, which keyword calls the parent class constructor?
+A) this()
+B) super()
+C) parent()
+D) base()
+ANSWER: B
+
+[EASY]
+Q: A protected member is accessible in:
+A) Only the same class
+B) The same class and its subclasses (and in Java, the same package)
+C) Any class anywhere
+D) No class
+ANSWER: B
+
+[MEDIUM]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class A {
+public:
+    A() { cout << "A+ "; }
+    ~A() { cout << "A- "; }
+};
+class B : public A {
+public:
+    B() { cout << "B+ "; }
+    ~B() { cout << "B- "; }
+};
+
+int main() {
+    B b;
+    cout << "| ";
+    return 0;
+}
+END
+A) A+ B+ | B- A-
+B) B+ A+ | A- B-
+C) A+ B+ | A- B-
+D) B+ A+ | B- A-
+ANSWER: A
+HINT: Construction goes base -> derived; destruction is the reverse.
+EXPLAIN: The base part is built first and destroyed last.
+
+[MEDIUM]
+Q: What is the output of this Java program?
+CODE java
+class Vehicle {
+    int wheels = 4;
+    String info() { return "Vehicle " + wheels; }
+}
+class Bike extends Vehicle {
+    int wheels = 2;
+    String info() { return "Bike " + wheels + " " + super.wheels; }
+}
+public class Main {
+    public static void main(String[] args) {
+        Vehicle v = new Bike();
+        System.out.println(v.wheels + " " + v.info());
+    }
+}
+END
+A) 4 Bike 2 4
+B) 2 Bike 2 4
+C) 4 Vehicle 4
+D) 2 Bike 2 2
+ANSWER: A
+HINT: Methods are overridden (chosen at runtime) but fields are only hidden (chosen by the reference type).
+EXPLAIN: v.wheels uses the Vehicle field (4); info() runs Bike's version, which prints its own wheels (2) and super.wheels (4).
+
+[MEDIUM]
+Q: The "diamond problem" in multiple inheritance refers to:
+A) Ambiguity when a class inherits the same member from two parents that share a common base
+B) A class with four constructors
+C) Circular references between objects
+D) Inheriting from a final class
+ANSWER: A
+HINT: Draw D inheriting from B and C, both of which inherit from A.
+EXPLAIN: D gets two copies of A's members; C++ solves it with virtual inheritance, Java avoids it by disallowing multiple class inheritance.
+
+[HARD]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class A { public: int x = 1; };
+class B : virtual public A {};
+class C : virtual public A {};
+class D : public B, public C {};
+
+int main() {
+    D d;
+    d.B::x = 5;
+    d.C::x += 2;
+    cout << d.x << endl;
+    return 0;
+}
+END
+A) 7
+B) 5
+C) 3
+D) Compilation error: ambiguous member
+ANSWER: A
+HINT: With virtual inheritance there is only ONE shared A sub-object inside D.
+EXPLAIN: B::x and C::x refer to the same variable: set to 5, then 5 + 2 = 7. Without virtual, d.x would be ambiguous.
+
+[HARD]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    ~Base() { cout << "~Base "; }
+};
+class Derived : public Base {
+public:
+    ~Derived() { cout << "~Derived "; }
+};
+
+int main() {
+    Base* p = new Derived();
+    delete p;
+    cout << endl;
+    return 0;
+}
+END
+A) ~Base
+B) ~Derived ~Base
+C) ~Base ~Derived
+D) Compilation error
+ANSWER: A
+HINT: The destructor is not virtual, so which destructor does delete p call?
+EXPLAIN: Without a virtual destructor only ~Base runs (technically undefined behaviour), so Derived's resources leak. Base classes used polymorphically need virtual destructors.
+
+# =====================================================================
+@subtopic Polymorphism
+
+[EASY]
+Q: Polymorphism means:
+A) One interface, many forms (the same call behaves differently for different objects)
+B) Hiding data
+C) Creating one object
+D) Using many variables
+ANSWER: A
+
+[EASY]
+Q: Method overloading is an example of:
+A) Compile-time (static) polymorphism
+B) Run-time (dynamic) polymorphism
+C) Encapsulation
+D) Inheritance only
+ANSWER: A
+
+[EASY]
+Q: Method overriding is resolved at:
+A) Compile time
+B) Run time
+C) Link time
+D) Load time
+ANSWER: B
+
+[EASY]
+Q: In C++, which keyword enables run-time polymorphism for a member function?
+A) static
+B) virtual
+C) inline
+D) friend
+ANSWER: B
+
+[EASY]
+Q: Two methods with the same name but different parameter lists in the same class are:
+A) Overridden
+B) Overloaded
+C) Hidden
+D) Abstract
+ANSWER: B
+
+[MEDIUM]
+Q: What is the output of this Java program?
+CODE java
+public class Main {
+    static String f(int x) { return "int"; }
+    static String f(long x) { return "long"; }
+    static String f(double x) { return "double"; }
+    static String f(Object x) { return "Object"; }
+    public static void main(String[] args) {
+        byte b = 1;
+        System.out.println(f(b) + " " + f(5L) + " " + f(2.0f) + " " + f("s"));
+    }
+}
+END
+A) int long double Object
+B) Object long double Object
+C) int int double Object
+D) Compilation error: ambiguous call
+ANSWER: A
+HINT: The compiler picks the most specific overload, preferring widening primitive conversions over boxing.
+EXPLAIN: byte widens to int; 5L is long; float widens to double; a String matches Object.
+
+[MEDIUM]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class Animal {
+public:
+    void eat() { cout << "Animal-eat "; }
+    virtual void speak() { cout << "Animal-speak "; }
+};
+class Cat : public Animal {
+public:
+    void eat() { cout << "Cat-eat "; }
+    void speak() override { cout << "Meow "; }
+};
+
+int main() {
+    Animal* a = new Cat();
+    a->eat();
+    a->speak();
+    delete a;
+    cout << endl;
+    return 0;
+}
+END
+A) Animal-eat Meow
+B) Cat-eat Meow
+C) Animal-eat Animal-speak
+D) Cat-eat Animal-speak
+ANSWER: A
+HINT: Only virtual functions are dispatched by the object's actual type.
+EXPLAIN: eat() is not virtual, so the pointer type (Animal) decides; speak() is virtual, so Cat's version runs.
+
+[MEDIUM]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class Money {
+public:
+    int rupees;
+    Money(int r) : rupees(r) {}
+    Money operator+(const Money& o) const { return Money(rupees + o.rupees); }
+    bool operator<(const Money& o) const { return rupees < o.rupees; }
+};
+
+int main() {
+    Money a(150), b(250);
+    Money c = a + b;
+    cout << c.rupees << " " << (a < b) << endl;
+    return 0;
+}
+END
+A) 400 1
+B) 400 true
+C) 150250 1
+D) Compilation error
+ANSWER: A
+HINT: Operator overloading lets + and < call the member functions. cout prints a bool as 1 or 0 by default.
+EXPLAIN: a + b gives 400, and a < b is true, which cout prints as 1 unless std::boolalpha is set.
+
+[HARD]
+Q: What is the output of this C++ program?
+CODE cpp
+#include <iostream>
+using namespace std;
+
+class Base {
+public:
+    virtual void show(int x = 10) { cout << "Base " << x << endl; }
+    virtual ~Base() {}
+};
+class Derived : public Base {
+public:
+    void show(int x = 20) override { cout << "Derived " << x << endl; }
+};
+
+int main() {
+    Base* p = new Derived();
+    p->show();
+    delete p;
+    return 0;
+}
+END
+A) Derived 10
+B) Derived 20
+C) Base 10
+D) Base 20
+ANSWER: A
+HINT: The function body is chosen at runtime, but default arguments are filled in at compile time.
+EXPLAIN: Dynamic dispatch runs Derived::show, but the default argument comes from the static type (Base*), which is 10.
+
+[HARD]
+Q: What is the output of this Java program?
+CODE java
+class A {
+    void m(Object o) { System.out.print("A.Object "); }
+}
+class B extends A {
+    void m(Object o) { System.out.print("B.Object "); }
+    void m(String s) { System.out.print("B.String "); }
+}
+public class Main {
+    public static void main(String[] args) {
+        A ref = new B();
+        ref.m("hi");
+        ((B) ref).m("hi");
+    }
+}
+END
+A) B.Object B.String
+B) B.String B.String
+C) A.Object B.String
+D) B.Object B.Object
+ANSWER: A
+HINT: The compiler chooses the overload from the REFERENCE type's methods; the JVM then picks the override from the object's class.
+EXPLAIN: Through an A reference only m(Object) is visible, which B overrides -> "B.Object". Through a B reference, m(String) is the most specific overload.
+
+# =====================================================================
+@subtopic Design Principles & Patterns
+
+[EASY]
+Q: Which SOLID principle says a class should have only one reason to change?
+A) Open/Closed Principle
+B) Single Responsibility Principle
+C) Liskov Substitution Principle
+D) Interface Segregation Principle
+ANSWER: B
+
+[EASY]
+Q: Which design pattern ensures that a class has only one instance?
+A) Factory
+B) Observer
+C) Singleton
+D) Adapter
+ANSWER: C
+
+[EASY]
+Q: Composition represents which relationship?
+A) is-a
+B) has-a
+C) depends-on only
+D) inherits-from
+ANSWER: B
+
+[EASY]
+Q: The Open/Closed Principle says that software entities should be:
+A) Open for modification, closed for extension
+B) Open for extension, closed for modification
+C) Always public
+D) Never inherited
+ANSWER: B
+
+[EASY]
+Q: Which pattern notifies many dependent objects automatically when one object's state changes (e.g. GUI event listeners)?
+A) Singleton
+B) Observer
+C) Builder
+D) Prototype
+ANSWER: B
+
+[MEDIUM]
+Q: Square extends Rectangle, but setting the width of a Square also changes its height, so code that works for Rectangles breaks for Squares. Which principle is violated?
+A) Liskov Substitution Principle
+B) Single Responsibility Principle
+C) Dependency Inversion Principle
+D) Don't Repeat Yourself
+ANSWER: A
+HINT: Can a Square be used everywhere a Rectangle is expected without surprising the caller?
+EXPLAIN: LSP requires that subtypes be substitutable for their base types without breaking expected behaviour.
+
+[MEDIUM]
+Q: What is the output of this Java program?
+CODE java
+interface Shape { double area(); }
+class Circle implements Shape {
+    double r; Circle(double r) { this.r = r; }
+    public double area() { return 3 * r * r; }
+}
+class Square implements Shape {
+    double s; Square(double s) { this.s = s; }
+    public double area() { return s * s; }
+}
+class ShapeFactory {
+    static Shape create(String type, double size) {
+        switch (type) {
+            case "circle": return new Circle(size);
+            case "square": return new Square(size);
+            default: throw new IllegalArgumentException(type);
+        }
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Shape a = ShapeFactory.create("circle", 2);
+        Shape b = ShapeFactory.create("square", 3);
+        System.out.println(a.area() + b.area());
+    }
+}
+END
+A) 21.0
+B) 12.0
+C) 9.0
+D) 21
+ANSWER: A
+HINT: The factory hides which concrete class is created. Both areas are doubles.
+EXPLAIN: Circle area = 3 x 2 x 2 = 12.0, Square area = 9.0, total 21.0 (printed as a double).
+
+[MEDIUM]
+Q: A high-level ReportService creates a MySQLDatabase object directly with new. Which principle suggests depending on a Database interface instead?
+A) Dependency Inversion Principle
+B) Interface Segregation Principle
+C) Liskov Substitution Principle
+D) Law of Demeter
+ANSWER: A
+HINT: High-level modules should not depend on low-level details.
+EXPLAIN: DIP: both should depend on abstractions, so the database can be swapped (this project's DAO interfaces do exactly that).
+
+[HARD]
+Q: What is the output of this Java program?
+CODE java
+import java.util.*;
+
+interface Listener { void onEvent(String e); }
+
+class EventBus {
+    private final List<Listener> listeners = new ArrayList<>();
+    void subscribe(Listener l) { listeners.add(l); }
+    void publish(String e) { for (Listener l : listeners) l.onEvent(e); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        EventBus bus = new EventBus();
+        StringBuilder log = new StringBuilder();
+        bus.subscribe(e -> log.append("A:").append(e).append(" "));
+        bus.subscribe(e -> log.append("B:").append(e.length()).append(" "));
+        bus.publish("hi");
+        bus.publish("bye");
+        System.out.println(log.toString().trim());
+    }
+}
+END
+A) A:hi B:2 A:bye B:3
+B) A:hi A:bye B:2 B:3
+C) B:2 A:hi B:3 A:bye
+D) A:hi B:hi A:bye B:bye
+ANSWER: A
+HINT: Each publish call notifies every subscriber in the order they subscribed.
+EXPLAIN: This is the Observer pattern: for each event, A logs the text and B logs its length.
+
+[HARD]
+Q: Why is this lazy Singleton NOT thread-safe, and what is a simple fix?
+CODE java
+class Config {
+    private static Config instance;
+    private Config() {}
+    public static Config get() {
+        if (instance == null) instance = new Config();
+        return instance;
+    }
+}
+END
+A) Two threads can both see null and create two instances; use an eager static final field or the holder-class idiom
+B) The private constructor stops any instance from being created
+C) Static methods cannot return objects
+D) It is thread-safe because the field is static
+ANSWER: A
+HINT: Imagine two threads running the if check at the same time.
+EXPLAIN: Check-then-act is a race. The initialisation-on-demand holder idiom (a nested static class) or a synchronized/volatile double-check fixes it.

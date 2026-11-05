@@ -1,0 +1,12 @@
+flowchart TB
+UI["Presentation layer (Swing)<br/>MainFrame + CardLayout<br/>Login · Dashboard · Subject · Quiz · Result · Review · Analytics · History · Admin<br/>custom components: PillButton, RoundPanel, OptionCard, CodeBlock, PasswordInput"]
+SV["Service layer<br/>AuthService · QuizService · AdminService · QuizSession"]
+DAO["Data access layer<br/>DAO interfaces + JDBC implementations (DAOFactory)"]
+DB[("SQLite database<br/>data/quiz.db")]
+QB[["Question bank files (*.qb)<br/>Java I/O parser / writer"]]
+CSV[["Results CSV export"]]
+UI -->|events call| SV
+SV --> DAO
+DAO -->|JDBC PreparedStatement| DB
+SV -->|BufferedReader / Writer| QB
+SV --> CSV

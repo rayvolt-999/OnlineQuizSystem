@@ -1,0 +1,100 @@
+classDiagram
+direction TB
+class Difficulty {
+  <<enumeration>>
+  EASY 20 Qs 10 min 1 mark
+  MEDIUM 10 Qs 10 min 2 marks
+  HARD 5 Qs 10 min 3 marks
+  +getQuestionCount() int
+  +isHintsAllowed() boolean
+}
+class Subject {
+  -String name
+  -String shortCode
+  -String color
+}
+class Subtopic {
+  -int subjectId
+  -String name
+}
+class Question {
+  -int subtopicId
+  -Difficulty difficulty
+  -String text
+  -String code
+  -String[] options
+  -int correctIndex
+  -String hint
+  -String explanation
+}
+class QuizSession {
+  -List~Question~ questions
+  -Map~Integer,Integer~ answers
+  -Set~Integer~ marked
+  -Set~Integer~ hintsShown
+  +selectAnswer(int)
+  +revealHint() String
+  +unansweredNumbers() List
+  +finish(..) QuizResult
+}
+class QuizResult {
+  -int correct
+  -int wrong
+  -int unanswered
+  -int hintsUsed
+  -double score
+  +getPercentage() double
+  +getGrade() String
+}
+class AnswerRecord {
+  -int selectedIndex
+  -boolean hintUsed
+  +getStatus() Status
+}
+class QuizService {
+  +startQuiz(User,Subject,Subtopic,Difficulty)
+  +submit(QuizSession,boolean)
+  +subtopicStats(User)
+}
+class AdminService {
+  +saveQuestion(Question)
+  +importBank(Path)
+  +exportBank(Path,Subject)
+}
+class AuthService {
+  +login(String,String) User
+  +registerStudent(..) User
+}
+class QuestionBankFormat {
+  +parse(BufferedReader) ParseResult
+  +write(Writer, List)
+}
+class DAOFactory
+class SubjectDAO { <<interface>> }
+class SubtopicDAO { <<interface>> }
+class QuestionDAO { <<interface>> }
+class ResultDAO { <<interface>> }
+class UserDAO { <<interface>> }
+class DatabaseManager {
+  +getConnection() Connection
+  +createSchema()
+}
+Subject "1" o-- "many" Subtopic
+Subtopic "1" o-- "many" Question
+Question --> Difficulty
+QuizSession "1" o-- "many" Question
+QuizSession ..> QuizResult : creates
+QuizResult "1" *-- "many" AnswerRecord
+AnswerRecord --> Question
+QuizService ..> QuizSession
+QuizService --> DAOFactory
+AdminService --> DAOFactory
+AdminService ..> QuestionBankFormat
+AuthService --> UserDAO
+DAOFactory --> SubjectDAO
+DAOFactory --> SubtopicDAO
+DAOFactory --> QuestionDAO
+DAOFactory --> ResultDAO
+DAOFactory --> UserDAO
+QuestionDAO ..> DatabaseManager : JDBC
+ResultDAO ..> DatabaseManager : JDBC

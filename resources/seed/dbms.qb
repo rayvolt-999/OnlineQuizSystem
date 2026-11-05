@@ -1,0 +1,518 @@
+# Database Management Systems question bank
+@subject Database Management Systems | DB | #CA8A04 | ER model, keys, SQL, normalisation, transactions and indexing
+
+# =====================================================================
+@subtopic ER Model & Keys
+
+[EASY]
+Q: In an ER diagram, an entity set is drawn as a:
+A) Rectangle
+B) Diamond
+C) Ellipse
+D) Arrow
+ANSWER: A
+EXPLAIN: Relationships are diamonds and attributes are ellipses.
+
+[EASY]
+Q: Which key uniquely identifies each row in a table and cannot be NULL?
+A) Foreign key
+B) Primary key
+C) Composite attribute
+D) Alternate index
+ANSWER: B
+
+[EASY]
+Q: A foreign key is used to:
+A) Speed up every query
+B) Enforce referential integrity between two tables
+C) Encrypt a column
+D) Sort the rows
+ANSWER: B
+
+[EASY]
+Q: A minimal set of attributes that can uniquely identify a tuple is called a:
+A) Super key
+B) Candidate key
+C) Foreign key
+D) Partial key
+ANSWER: B
+EXPLAIN: A super key may contain extra attributes; a candidate key is a minimal super key.
+
+[EASY]
+Q: An attribute that can have several values for one entity (e.g. phone numbers) is called:
+A) Derived attribute
+B) Multivalued attribute
+C) Key attribute
+D) Simple attribute
+ANSWER: B
+
+[MEDIUM]
+Q: A relation R(A, B, C) has the functional dependencies A -> B and B -> C. Which is a candidate key?
+A) A
+B) B
+C) C
+D) BC
+ANSWER: A
+HINT: Compute the closure A+ and check whether it contains every attribute.
+EXPLAIN: A+ = {A, B, C}, so A determines everything and is minimal. B+ = {B, C} does not include A.
+
+[MEDIUM]
+Q: A many-to-many relationship between Student and Course is converted to tables. How many tables are needed at minimum?
+A) 3 (Student, Course and an Enrollment table)
+B) 2
+C) 1
+D) 4
+ANSWER: A
+HINT: Where would you store which student took which course without repeating data?
+EXPLAIN: An M:N relationship becomes its own table holding the primary keys of both entities as foreign keys.
+
+[MEDIUM]
+Q: A weak entity set is one that:
+A) Has no attributes
+B) Cannot be uniquely identified by its own attributes and depends on an identifying (owner) entity
+C) Has only one row
+D) Has no relationships
+ANSWER: B
+HINT: Think of Dependent (child) records of an Employee that are only unique per employee.
+EXPLAIN: A weak entity has a partial key (discriminator); its full key combines the owner's primary key with the partial key. It is drawn with a double rectangle.
+
+[HARD]
+Q: R(A, B, C, D) has FDs AB -> C, C -> D and D -> A. How many candidate keys does R have?
+A) 3
+B) 1
+C) 2
+D) 4
+ANSWER: A
+HINT: B never appears on the right side, so it must be in every key. Try B with each other attribute.
+EXPLAIN: AB+ = ABCD, CB+ = CBDA, DB+ = DBAC, while B alone gives only B. So AB, BC and BD are candidate keys.
+
+[HARD]
+Q: In an ER diagram, a total participation of entity E in relationship R (double line) means:
+A) Every entity in E must take part in at least one instance of R
+B) E participates in R at most once
+C) R must have attributes
+D) E is a weak entity
+ANSWER: A
+HINT: Compare "every employee must work in some department" with "some employees manage departments".
+EXPLAIN: Total participation is an existence constraint; when mapping to tables it often becomes a NOT NULL foreign key.
+
+# =====================================================================
+@subtopic SQL Queries
+
+[EASY]
+Q: Which SQL command retrieves data from a table?
+A) GET
+B) SELECT
+C) FETCH
+D) OPEN
+ANSWER: B
+
+[EASY]
+Q: Which clause filters rows BEFORE grouping?
+A) HAVING
+B) WHERE
+C) ORDER BY
+D) GROUP BY
+ANSWER: B
+
+[EASY]
+Q: Which clause filters groups created by GROUP BY?
+A) WHERE
+B) HAVING
+C) LIMIT
+D) DISTINCT
+ANSWER: B
+
+[EASY]
+Q: Which of these is a DDL (Data Definition Language) command?
+A) INSERT
+B) UPDATE
+C) CREATE
+D) SELECT
+ANSWER: C
+
+[EASY]
+Q: Which keyword removes duplicate rows from a query result?
+A) UNIQUE
+B) DISTINCT
+C) DIFFERENT
+D) SINGLE
+ANSWER: B
+
+[MEDIUM]
+Q: What does the final SELECT return?
+CODE sql
+CREATE TABLE emp(id INT, name TEXT, dept TEXT, salary INT);
+INSERT INTO emp VALUES (1,'Asha','CSE',60000),(2,'Ravi','ECE',45000),
+  (3,'Kiran','CSE',52000),(4,'Meena','ECE',47000),(5,'John','MECH',39000);
+SELECT dept, COUNT(*) FROM emp WHERE salary > 40000 GROUP BY dept HAVING COUNT(*) >= 2;
+END
+A) CSE 2 ECE 2
+B) CSE 2 ECE 2 MECH 1
+C) CSE 2
+D) ECE 2
+ANSWER: A
+HINT: WHERE removes rows first (John), then GROUP BY forms groups, then HAVING filters the groups.
+EXPLAIN: After WHERE, CSE has 2 rows and ECE has 2 rows; MECH has none left.
+
+[MEDIUM]
+Q: What does the final SELECT return?
+CODE sql
+CREATE TABLE s(id INT, name TEXT);
+CREATE TABLE m(sid INT, marks INT);
+INSERT INTO s VALUES (1,'Asha'),(2,'Ravi'),(3,'Kiran');
+INSERT INTO m VALUES (1,80),(1,90),(3,70);
+SELECT s.name, COUNT(m.sid) FROM s LEFT JOIN m ON s.id = m.sid GROUP BY s.id ORDER BY s.id;
+END
+A) Asha 2 Ravi 0 Kiran 1
+B) Asha 2 Kiran 1
+C) Asha 2 Ravi 1 Kiran 1
+D) Asha 1 Ravi 0 Kiran 1
+ANSWER: A
+HINT: A LEFT JOIN keeps every student; COUNT(column) does not count NULLs.
+EXPLAIN: Ravi has no marks, so his joined m.sid is NULL and COUNT gives 0.
+
+[MEDIUM]
+Q: What does the final SELECT return?
+CODE sql
+CREATE TABLE emp(name TEXT, salary INT);
+INSERT INTO emp VALUES ('A',300),('B',500),('C',400),('D',500),('E',200);
+SELECT MAX(salary) FROM emp WHERE salary < (SELECT MAX(salary) FROM emp);
+END
+A) 400
+B) 500
+C) 300
+D) 200
+ANSWER: A
+HINT: The subquery finds the highest salary; the outer query finds the highest one below it.
+EXPLAIN: This is the classic "second highest salary" query: the maximum below 500 is 400 (duplicates of 500 are excluded).
+
+[HARD]
+Q: What does the final SELECT return?
+CODE sql
+CREATE TABLE t(x INT);
+INSERT INTO t VALUES (1),(2),(NULL),(4);
+SELECT COUNT(*), COUNT(x), SUM(x), AVG(x) FROM t;
+END
+A) 4 3 7 2.3333333333333335
+B) 4 4 7 1.75
+C) 3 3 7 2.3333333333333335
+D) 4 3 NULL NULL
+ANSWER: A
+HINT: COUNT(*) counts rows; the other aggregates ignore NULL values.
+EXPLAIN: 4 rows, 3 non-NULL values, sum 7, average 7 / 3.
+
+[HARD]
+Q: What does the final SELECT return?
+CODE sql
+CREATE TABLE a(v INT);
+CREATE TABLE b(v INT);
+INSERT INTO a VALUES (1),(2),(3);
+INSERT INTO b VALUES (2),(NULL);
+SELECT COUNT(*) FROM a WHERE v NOT IN (SELECT v FROM b);
+END
+A) 0
+B) 2
+C) 1
+D) 3
+ANSWER: A
+HINT: NOT IN compares against every value in the list, including NULL. What is 1 <> NULL?
+EXPLAIN: v NOT IN (2, NULL) means v <> 2 AND v <> NULL; anything compared with NULL is UNKNOWN, so no row qualifies. Use NOT EXISTS to avoid this trap.
+
+# =====================================================================
+@subtopic Normalization
+
+[EASY]
+Q: The main goal of normalisation is to:
+A) Increase data redundancy
+B) Reduce redundancy and update anomalies
+C) Speed up every query
+D) Encrypt data
+ANSWER: B
+
+[EASY]
+Q: A table is in First Normal Form (1NF) when:
+A) All attributes contain atomic (indivisible) values
+B) It has no foreign keys
+C) It has only one column
+D) It has no primary key
+ANSWER: A
+
+[EASY]
+Q: Which normal form removes partial dependencies on a composite key?
+A) 1NF
+B) 2NF
+C) 3NF
+D) BCNF
+ANSWER: B
+
+[EASY]
+Q: Which normal form removes transitive dependencies?
+A) 1NF
+B) 2NF
+C) 3NF
+D) 4NF
+ANSWER: C
+
+[EASY]
+Q: A functional dependency X -> Y means:
+A) Y determines X
+B) Each value of X is associated with exactly one value of Y
+C) X and Y are both keys
+D) X and Y are never NULL
+ANSWER: B
+
+[MEDIUM]
+Q: Table Enroll(StudentID, CourseID, StudentName, Grade) has key (StudentID, CourseID) and StudentID -> StudentName. What is its highest normal form?
+A) 1NF
+B) 2NF
+C) 3NF
+D) BCNF
+ANSWER: A
+HINT: Does any non-key attribute depend on only PART of the composite key?
+EXPLAIN: StudentName depends on StudentID alone, a partial dependency, so the table is not in 2NF.
+
+[MEDIUM]
+Q: Employee(EmpID, DeptID, DeptName) has key EmpID with EmpID -> DeptID and DeptID -> DeptName. To reach 3NF you should:
+A) Split into Employee(EmpID, DeptID) and Department(DeptID, DeptName)
+B) Add DeptName to the key
+C) Remove DeptID
+D) It is already in 3NF
+ANSWER: A
+HINT: DeptName depends on the key only THROUGH DeptID.
+EXPLAIN: The transitive dependency EmpID -> DeptID -> DeptName is removed by moving department data into its own table.
+
+[MEDIUM]
+Q: Which anomaly occurs when deleting the last student of a course also loses the course's details, because both are stored in the same table?
+A) Deletion anomaly
+B) Insertion anomaly
+C) Update anomaly
+D) Lost update
+ANSWER: A
+HINT: The problem happens on DELETE.
+EXPLAIN: Unrelated facts stored together are lost together; normalisation separates them.
+
+[HARD]
+Q: R(A, B, C) has FDs AB -> C and C -> B. The candidate keys are AB and AC. Which statement is true?
+A) R is in 3NF but not in BCNF
+B) R is in BCNF
+C) R is not in 2NF
+D) R is not in 1NF
+ANSWER: A
+HINT: BCNF needs every determinant to be a super key. Is C a super key? For 3NF, a prime attribute on the right side is allowed.
+EXPLAIN: C -> B violates BCNF because C is not a super key, but B is prime (part of key AB), so 3NF is satisfied.
+
+[HARD]
+Q: Decomposing R(A, B, C) with FD A -> B into R1(A, B) and R2(A, C) is:
+A) Lossless, because the common attribute A is a key of R1
+B) Lossy, because C is lost
+C) Lossless only if C -> A
+D) Neither lossless nor dependency preserving
+ANSWER: A
+HINT: A binary decomposition is lossless if the common attributes form a key of at least one of the parts.
+EXPLAIN: R1 intersect R2 = {A}, and A -> B makes A a key of R1, so the natural join recreates R exactly. The FD A -> B is also preserved in R1.
+
+# =====================================================================
+@subtopic Transactions & Concurrency
+
+[EASY]
+Q: What does the A in ACID stand for?
+A) Availability
+B) Atomicity
+C) Accuracy
+D) Authorization
+ANSWER: B
+
+[EASY]
+Q: Which command makes all changes of the current transaction permanent?
+A) ROLLBACK
+B) SAVEPOINT
+C) COMMIT
+D) GRANT
+ANSWER: C
+
+[EASY]
+Q: Which ACID property guarantees that committed data survives a power failure?
+A) Atomicity
+B) Consistency
+C) Isolation
+D) Durability
+ANSWER: D
+
+[EASY]
+Q: Which command undoes the changes of the current transaction?
+A) UNDO
+B) ROLLBACK
+C) REVERT
+D) DELETE
+ANSWER: B
+
+[EASY]
+Q: A situation where two transactions each wait for a lock held by the other is called a:
+A) Deadlock
+B) Livelock
+C) Commit
+D) Checkpoint
+ANSWER: A
+
+[MEDIUM]
+Q: Transaction T1 reads a value written by T2, then T2 rolls back. What problem has T1 suffered?
+A) Dirty read
+B) Phantom read
+C) Lost update
+D) Deadlock
+ANSWER: A
+HINT: The value T1 read never officially existed.
+EXPLAIN: Reading uncommitted data is a dirty read; it is prevented by READ COMMITTED and stronger isolation levels.
+
+[MEDIUM]
+Q: What does the final SELECT return?
+CODE sql
+CREATE TABLE acc(id INT, bal INT);
+INSERT INTO acc VALUES (1,1000),(2,500);
+BEGIN;
+UPDATE acc SET bal = bal - 300 WHERE id = 1;
+UPDATE acc SET bal = bal + 300 WHERE id = 2;
+ROLLBACK;
+BEGIN;
+UPDATE acc SET bal = bal - 100 WHERE id = 1;
+COMMIT;
+SELECT bal FROM acc ORDER BY id;
+END
+A) 900 500
+B) 600 800
+C) 700 800
+D) 1000 500
+ANSWER: A
+HINT: Everything between the first BEGIN and ROLLBACK is undone.
+EXPLAIN: The 300 transfer is rolled back; only the second transaction (-100 from account 1) is committed.
+
+[MEDIUM]
+Q: In Two-Phase Locking (2PL), a transaction:
+A) Acquires all locks in a growing phase and releases them in a shrinking phase, never acquiring a lock after releasing one
+B) Locks and unlocks freely
+C) Uses only shared locks
+D) Never releases locks
+ANSWER: A
+HINT: The name comes from the two phases of the lock count over time.
+EXPLAIN: 2PL guarantees conflict-serializable schedules; strict 2PL also holds exclusive locks until commit to avoid cascading aborts.
+
+[HARD]
+Q: Schedule S: R1(X), R2(X), W1(X), W2(X). Is S conflict serializable?
+A) No — the precedence graph has a cycle T1 -> T2 -> T1
+B) Yes, equivalent to T1 then T2
+C) Yes, equivalent to T2 then T1
+D) Yes, because there are only two transactions
+ANSWER: A
+HINT: Draw an edge Ti -> Tj for each pair of conflicting operations where Ti's operation comes first.
+EXPLAIN: R1(X) before W2(X) gives T1 -> T2; R2(X) before W1(X) gives T2 -> T1. The cycle means it is not conflict serializable (it is a lost-update pattern).
+
+[HARD]
+Q: Which isolation level prevents dirty reads and non-repeatable reads but may still allow phantom reads (according to the SQL standard)?
+A) REPEATABLE READ
+B) READ UNCOMMITTED
+C) READ COMMITTED
+D) SERIALIZABLE
+ANSWER: A
+HINT: Phantoms are NEW rows matching a WHERE clause, not changed values of rows already read.
+EXPLAIN: REPEATABLE READ locks/keeps rows already read stable, but other transactions can still insert new matching rows; SERIALIZABLE prevents that too.
+
+# =====================================================================
+@subtopic Indexing & Query Processing
+
+[EASY]
+Q: What is the main purpose of an index on a column?
+A) Faster searching and lookups on that column
+B) Reducing disk space
+C) Enforcing a foreign key
+D) Encrypting the column
+ANSWER: A
+
+[EASY]
+Q: Which data structure is used by most relational databases for indexes?
+A) B+ tree
+B) Linked list
+C) Stack
+D) Binary heap
+ANSWER: A
+
+[EASY]
+Q: A drawback of creating many indexes on a table is:
+A) INSERT, UPDATE and DELETE become slower
+B) SELECT becomes slower
+C) Data is lost
+D) The primary key is removed
+ANSWER: A
+EXPLAIN: Every index must be updated whenever the indexed data changes.
+
+[EASY]
+Q: A clustered index determines:
+A) The physical order of rows in the table
+B) The number of columns
+C) Which user can read the table
+D) The backup schedule
+ANSWER: A
+EXPLAIN: A table can therefore have only one clustered index.
+
+[EASY]
+Q: Which SQL command creates an index?
+A) MAKE INDEX
+B) CREATE INDEX
+C) ADD INDEX ONLY
+D) NEW INDEX
+ANSWER: B
+
+[MEDIUM]
+Q: Why do B+ trees store all records (or record pointers) in the leaf nodes and link the leaves together?
+A) So range queries can scan leaves sequentially after one tree search
+B) To use less memory than a binary tree
+C) So the tree never needs balancing
+D) To allow duplicate primary keys
+ANSWER: A
+HINT: Think of WHERE marks BETWEEN 60 AND 80.
+EXPLAIN: Find the first matching leaf in O(log n), then follow leaf links for the rest of the range.
+
+[MEDIUM]
+Q: An index exists on name. Which WHERE clause typically CANNOT use that B+ tree index efficiently?
+A) WHERE name LIKE '%kumar'
+B) WHERE name = 'Ravi'
+C) WHERE name LIKE 'Ra%'
+D) WHERE name > 'M'
+ANSWER: A
+HINT: A B+ tree is sorted by the beginning of the value.
+EXPLAIN: A leading wildcard means the starting position in the sorted order is unknown, so the whole table/index must be scanned.
+
+[MEDIUM]
+Q: What does the final SELECT return?
+CODE sql
+CREATE TABLE p(id INT, cat TEXT, price INT);
+INSERT INTO p VALUES (1,'pen',10),(2,'book',250),(3,'pen',15),(4,'bag',800),(5,'book',150);
+SELECT cat, SUM(price) AS total FROM p GROUP BY cat ORDER BY total DESC LIMIT 2;
+END
+A) bag 800 book 400
+B) book 400 bag 800
+C) bag 800 pen 25
+D) book 250 bag 800
+ANSWER: A
+HINT: Group first, then order the groups by their totals and keep two.
+EXPLAIN: Totals are bag 800, book 400, pen 25; the top two in descending order are bag and book.
+
+[HARD]
+Q: A B+ tree index has order (fan-out) 100 and holds 1,000,000 keys. About how many levels must be traversed to find a key?
+A) 3
+B) 6
+C) 20
+D) 100
+ANSWER: A
+HINT: Each level multiplies the number of reachable keys by about the fan-out: 100^levels >= 10^6.
+EXPLAIN: 100^3 = 10^6, so about 3 levels (disk reads) — compared with about 20 for a binary search tree.
+
+[HARD]
+Q: For an equi-join of a large table R with a small table S that fits in memory, which join algorithm is usually best?
+A) Hash join, building the hash table on S and probing it with R
+B) Nested loop join with R as the inner table
+C) Cartesian product followed by a filter
+D) Sort-merge join after sorting both tables by every column
+ANSWER: A
+HINT: Build on the smaller input so the hash table fits in memory.
+EXPLAIN: A hash join reads each table once: O(|R| + |S|). A naive nested loop would be O(|R| x |S|).

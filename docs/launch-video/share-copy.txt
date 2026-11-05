@@ -1,0 +1,1 @@
+Can you predict the output? Our B.Tech CSE project is a Java Swing exam-prep app: 460 questions across 8 subjects, Easy/Medium/Hard timed tests, code-output rounds with starting hints, and analytics that point out your weak topics. Every one of the 124 code answers was checked by actually running the code.

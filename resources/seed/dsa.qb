@@ -1,0 +1,815 @@
+# Data Structures question bank
+@subject Data Structures | DS | #2563EB | Arrays, linked lists, stacks, trees, graphs, sorting and searching
+
+# =====================================================================
+@subtopic Arrays & Strings
+
+[EASY]
+Q: What is the index of the first element of an array in Java, C and Python?
+A) 0
+B) 1
+C) -1
+D) Depends on the array size
+ANSWER: A
+EXPLAIN: All three languages use zero-based indexing.
+
+[EASY]
+Q: What is the time complexity of accessing the element at index i of an array?
+A) O(1)
+B) O(log n)
+C) O(n)
+D) O(i)
+ANSWER: A
+EXPLAIN: The address is computed directly as base + i x element size.
+
+[EASY]
+Q: Array elements are stored in memory:
+A) At random locations linked by pointers
+B) In contiguous (adjacent) memory locations
+C) In a tree structure
+D) Only on the disk
+ANSWER: B
+
+[EASY]
+Q: Inserting an element at the beginning of an array of n elements takes:
+A) O(1)
+B) O(log n)
+C) O(n)
+D) O(n^2)
+ANSWER: C
+EXPLAIN: Every existing element must be shifted one position to the right.
+
+[EASY]
+Q: In Java, which method returns the number of characters in a String s?
+A) s.size()
+B) s.length()
+C) s.length
+D) s.count()
+ANSWER: B
+EXPLAIN: Strings use the method length(); arrays use the field length.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        int[] a = {3, 1, 4, 1, 5};
+        int s = 0;
+        for (int i = 1; i < a.length; i += 2) {
+            s += a[i];
+        }
+        System.out.println(s);
+    }
+}
+END
+A) 2
+B) 9
+C) 14
+D) 6
+ANSWER: A
+HINT: The loop starts at index 1 and jumps by 2, so only odd indices are visited.
+EXPLAIN: Indices 1 and 3 hold 1 and 1, so s = 2.
+
+[MEDIUM]
+Q: What does this Python code print?
+CODE python
+s = "datastructure"
+print(s[2:6], s[-3:])
+END
+A) tast ure
+B) atas ure
+C) tast ture
+D) tas ure
+ANSWER: A
+HINT: s[2:6] takes indices 2, 3, 4 and 5; s[-3:] takes the last three characters.
+EXPLAIN: Index 2..5 of "datastructure" is "tast"; the last three characters are "ure".
+
+[MEDIUM]
+Q: A 2D array int a[4][5] is stored in row-major order starting at address 1000 with 4 bytes per element. What is the address of a[2][3]?
+A) 1052
+B) 1048
+C) 1056
+D) 1076
+ANSWER: A
+HINT: Address = base + (row x number_of_columns + col) x size.
+EXPLAIN: 1000 + (2 x 5 + 3) x 4 = 1000 + 52 = 1052.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        int[] a = {1, 2, 3, 4, 5};
+        int k = 2;
+        int n = a.length;
+        int[] r = new int[n];
+        for (int i = 0; i < n; i++) {
+            r[(i + k) % n] = a[i];
+        }
+        for (int x : r) System.out.print(x + " ");
+    }
+}
+END
+A) 4 5 1 2 3
+B) 3 4 5 1 2
+C) 2 3 4 5 1
+D) 5 4 3 2 1
+ANSWER: A
+HINT: Each element moves k positions to the right, wrapping around the end.
+EXPLAIN: This is a right rotation by 2: element 1 goes to index 2, 4 goes to index 0, 5 to index 1.
+
+[HARD]
+Q: Using Kadane's algorithm, what is the maximum subarray sum of [-2, 1, -3, 4, -1, 2, 1, -5, 4]?
+A) 6
+B) 7
+C) 5
+D) 4
+ANSWER: A
+HINT: Keep a running sum and reset it to the current element whenever the running sum becomes worse than starting fresh.
+EXPLAIN: The best subarray is [4, -1, 2, 1] with sum 6.
+
+# =====================================================================
+@subtopic Linked Lists
+
+[EASY]
+Q: Each node of a singly linked list contains:
+A) Only data
+B) Data and a pointer to the next node
+C) Data and pointers to the next and previous nodes
+D) Only a pointer
+ANSWER: B
+
+[EASY]
+Q: What is the time complexity of inserting a node at the head of a singly linked list?
+A) O(1)
+B) O(log n)
+C) O(n)
+D) O(n log n)
+ANSWER: A
+EXPLAIN: Only two pointer assignments are needed, regardless of list length.
+
+[EASY]
+Q: Accessing the k-th element of a singly linked list takes:
+A) O(1)
+B) O(k)
+C) O(log k)
+D) O(k^2)
+ANSWER: B
+EXPLAIN: There is no random access; you must walk k nodes from the head.
+
+[EASY]
+Q: In a circular linked list, the last node points to:
+A) null
+B) Itself
+C) The first node
+D) The middle node
+ANSWER: C
+
+[EASY]
+Q: Which advantage does a doubly linked list have over a singly linked list?
+A) It uses less memory
+B) It can be traversed in both directions
+C) It allows O(1) random access
+D) It never needs pointers
+ANSWER: B
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    static class Node {
+        int val; Node next;
+        Node(int v, Node n) { val = v; next = n; }
+    }
+    public static void main(String[] args) {
+        Node head = new Node(1, new Node(2, new Node(3, null)));
+        Node prev = null, cur = head;
+        while (cur != null) {
+            Node nxt = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = nxt;
+        }
+        for (Node p = prev; p != null; p = p.next) System.out.print(p.val + " ");
+    }
+}
+END
+A) 1 2 3
+B) 3 2 1
+C) 3
+D) 1
+ANSWER: B
+HINT: Watch what happens to cur.next in each iteration: it is pointed backwards.
+EXPLAIN: This is the classic in-place reversal; prev ends at the old tail.
+
+[MEDIUM]
+Q: Two pointers start at the head; slow moves 1 step and fast moves 2 steps at a time. When fast reaches the end of a list with 7 nodes (values 1..7), which node is slow at?
+A) 3
+B) 4
+C) 5
+D) 7
+ANSWER: B
+HINT: The fast pointer covers twice the distance of the slow pointer.
+EXPLAIN: Slow visits 1,2,3,4 while fast visits 1,3,5,7 — slow stops at the middle node, 4.
+
+[MEDIUM]
+Q: What is the output of this Python code?
+CODE python
+class Node:
+    def __init__(self, v, nxt=None):
+        self.v, self.next = v, nxt
+
+head = Node(10, Node(20, Node(30, Node(40))))
+head.next = head.next.next
+total, p = 0, head
+while p:
+    total += p.v
+    p = p.next
+print(total)
+END
+A) 100
+B) 80
+C) 70
+D) 60
+ANSWER: B
+HINT: The second line skips one node. Which one?
+EXPLAIN: head.next now points to 30, so the node 20 is removed: 10 + 30 + 40 = 80.
+
+[HARD]
+Q: Floyd's cycle-detection algorithm uses a slow and a fast pointer. After they meet inside the cycle, how is the START of the cycle found?
+A) Move both pointers one step at a time from the meeting point until they meet again
+B) Reset one pointer to the head, then move both one step at a time; they meet at the cycle start
+C) Reverse the list from the meeting point
+D) Count the nodes in the cycle and divide by two
+ANSWER: B
+HINT: The distance from the head to the cycle start equals the distance from the meeting point to the cycle start (mod cycle length).
+EXPLAIN: If the head-to-start distance is a and the meeting point is b steps into the cycle of length c, then a = c - b (mod c), so pointers moving from head and meeting point meet at the start.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    static class Node {
+        int v; Node next;
+        Node(int v) { this.v = v; }
+    }
+    public static void main(String[] args) {
+        Node head = null, tail = null;
+        for (int i = 1; i <= 6; i++) {
+            Node n = new Node(i);
+            if (head == null) head = tail = n; else { tail.next = n; tail = n; }
+        }
+        Node p = head;
+        while (p != null && p.next != null) {
+            p.next = p.next.next;
+            p = p.next;
+        }
+        for (Node q = head; q != null; q = q.next) System.out.print(q.v + " ");
+    }
+}
+END
+A) 1 3 5
+B) 2 4 6
+C) 1 2 3
+D) 1 3 5 6
+ANSWER: A
+HINT: Each iteration unlinks the node right after p, then jumps p forward.
+EXPLAIN: Nodes 2, 4 and 6 are unlinked in turn, leaving 1 3 5.
+
+# =====================================================================
+@subtopic Stacks & Queues
+
+[EASY]
+Q: Which data structure follows the LIFO (Last In, First Out) principle?
+A) Queue
+B) Stack
+C) Array
+D) Tree
+ANSWER: B
+
+[EASY]
+Q: Which data structure follows the FIFO (First In, First Out) principle?
+A) Stack
+B) Queue
+C) Graph
+D) Heap
+ANSWER: B
+
+[EASY]
+Q: Removing an element from the top of a stack is called:
+A) Push
+B) Pop
+C) Enqueue
+D) Peek
+ANSWER: B
+
+[EASY]
+Q: Which data structure does the computer use to manage function calls and recursion?
+A) Queue
+B) Call stack
+C) Hash table
+D) Graph
+ANSWER: B
+
+[EASY]
+Q: In a circular queue implemented with an array, the rear index after insertion is updated as:
+A) rear = rear + 1
+B) rear = (rear + 1) % capacity
+C) rear = rear - 1
+D) rear = capacity - rear
+ANSWER: B
+EXPLAIN: The modulo makes the index wrap back to 0 after the last slot.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class Main {
+    public static void main(String[] args) {
+        Deque<Integer> st = new ArrayDeque<>();
+        st.push(1);
+        st.push(2);
+        st.push(3);
+        st.pop();
+        st.push(4);
+        System.out.println(st.pop() + st.peek());
+    }
+}
+END
+A) 6
+B) 7
+C) 5
+D) 42
+ANSWER: A
+HINT: After pop and push, the stack is 1, 2, 4 with 4 on top. Note that + adds two Integers.
+EXPLAIN: pop() returns 4, peek() then returns 2, and 4 + 2 = 6 (numeric addition, not string concatenation).
+
+[MEDIUM]
+Q: What is the value of the postfix expression 6 2 3 + * 4 - ?
+A) 26
+B) 32
+C) 20
+D) 14
+ANSWER: A
+HINT: Push numbers; when you see an operator pop two values, apply it, and push the result.
+EXPLAIN: 2 + 3 = 5, 6 x 5 = 30, 30 - 4 = 26.
+
+[MEDIUM]
+Q: What does this Python code print?
+CODE python
+from collections import deque
+q = deque([1, 2, 3])
+q.append(4)
+q.popleft()
+q.appendleft(9)
+print(list(q))
+END
+A) [9, 2, 3, 4]
+B) [1, 2, 3, 4, 9]
+C) [9, 1, 2, 3]
+D) [2, 3, 4, 9]
+ANSWER: A
+HINT: popleft removes from the front; appendleft adds to the front.
+EXPLAIN: [1,2,3] -> [1,2,3,4] -> [2,3,4] -> [9,2,3,4].
+
+[HARD]
+Q: Two stacks are used to implement a queue (push into stack IN, pop from stack OUT, refilling OUT from IN only when OUT is empty). What is the amortised cost of dequeue?
+A) O(1)
+B) O(log n)
+C) O(n)
+D) O(n^2)
+ANSWER: A
+HINT: Count how many times a single element can be moved between the two stacks over its lifetime.
+EXPLAIN: Each element is pushed and popped at most twice in total, so n operations cost O(n): O(1) amortised.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+public class Main {
+    public static void main(String[] args) {
+        int[] a = {2, 7, 3, 5, 4, 6, 8};
+        int[] res = new int[a.length];
+        Deque<Integer> st = new ArrayDeque<>();
+        for (int i = a.length - 1; i >= 0; i--) {
+            while (!st.isEmpty() && st.peek() <= a[i]) st.pop();
+            res[i] = st.isEmpty() ? -1 : st.peek();
+            st.push(a[i]);
+        }
+        for (int x : res) System.out.print(x + " ");
+    }
+}
+END
+A) 7 8 5 6 6 8 -1
+B) 7 -1 5 6 6 8 -1
+C) 7 8 5 6 6 8 8
+D) -1 8 5 6 6 8 7
+ANSWER: A
+HINT: This is the "next greater element" pattern using a monotonic stack, scanned from the right.
+EXPLAIN: For each element the stack keeps only larger values to its right; e.g. after 7 the next larger is 8, after 5 it is 6.
+
+# =====================================================================
+@subtopic Trees
+
+[EASY]
+Q: The topmost node of a tree is called the:
+A) Leaf
+B) Root
+C) Parent of all leaves
+D) Sibling
+ANSWER: B
+
+[EASY]
+Q: A node with no children is called a:
+A) Root
+B) Internal node
+C) Leaf node
+D) Ancestor
+ANSWER: C
+
+[EASY]
+Q: In a binary search tree (BST), the left child of a node contains:
+A) A greater key
+B) A smaller key
+C) The same key
+D) No key
+ANSWER: B
+
+[EASY]
+Q: Which traversal of a BST visits the keys in sorted (ascending) order?
+A) Preorder
+B) Inorder
+C) Postorder
+D) Level order
+ANSWER: B
+
+[EASY]
+Q: What is the maximum number of children a node in a binary tree can have?
+A) 1
+B) 2
+C) 3
+D) Unlimited
+ANSWER: B
+
+[MEDIUM]
+Q: What is the preorder traversal of the BST built by inserting 50, 30, 70, 20, 40, 60 in that order?
+A) 50 30 20 40 70 60
+B) 20 30 40 50 60 70
+C) 20 40 30 60 70 50
+D) 50 30 70 20 40 60
+ANSWER: A
+HINT: Preorder = Root, Left subtree, Right subtree. First draw the tree.
+EXPLAIN: Tree: 50 with left 30 (children 20, 40) and right 70 (left child 60). Preorder: 50 30 20 40 70 60.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    static class Node {
+        int v; Node l, r;
+        Node(int v, Node l, Node r) { this.v = v; this.l = l; this.r = r; }
+    }
+    static int height(Node n) {
+        if (n == null) return 0;
+        return 1 + Math.max(height(n.l), height(n.r));
+    }
+    public static void main(String[] args) {
+        Node t = new Node(1,
+                new Node(2, new Node(4, null, null), null),
+                new Node(3, null, new Node(5, null, new Node(6, null, null))));
+        System.out.println(height(t));
+    }
+}
+END
+A) 3
+B) 4
+C) 5
+D) 6
+ANSWER: B
+HINT: Here height counts nodes on the longest root-to-leaf path. Find that path first.
+EXPLAIN: The longest path is 1 -> 3 -> 5 -> 6, which has 4 nodes.
+
+[MEDIUM]
+Q: In an array-based binary heap (index starting at 0), what are the indices of the children of the node at index i?
+A) 2i and 2i + 1
+B) 2i + 1 and 2i + 2
+C) i + 1 and i + 2
+D) i/2 and i/2 + 1
+ANSWER: B
+HINT: The root is at index 0 and its children must be at 1 and 2.
+EXPLAIN: With 0-based indexing, left = 2i + 1 and right = 2i + 2; the parent is (i - 1) / 2.
+
+[HARD]
+Q: An AVL tree contains the keys 10, 20 (inserted in that order). Key 30 is inserted next. Which rotation restores balance, and which key becomes the root?
+A) Right rotation; root 10
+B) Left rotation; root 20
+C) Left-Right rotation; root 30
+D) No rotation needed; root 10
+ANSWER: B
+HINT: The imbalance is on the right side of the right child (RR case).
+EXPLAIN: 10 -> 20 -> 30 is a right-right chain; a single left rotation at 10 makes 20 the root with children 10 and 30.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    static int count(int n) {
+        if (n <= 1) return 1;
+        int total = 0;
+        for (int root = 1; root <= n; root++) {
+            total += count(root - 1) * count(n - root);
+        }
+        return total;
+    }
+    public static void main(String[] args) {
+        System.out.println(count(4));
+    }
+}
+END
+A) 14
+B) 16
+C) 24
+D) 10
+ANSWER: A
+HINT: Each value can be the root; multiply the number of possible left and right subtrees. This computes Catalan numbers.
+EXPLAIN: It counts structurally different BSTs on 4 keys: C(4) = 14.
+
+# =====================================================================
+@subtopic Graphs
+
+[EASY]
+Q: A graph is made of:
+A) Rows and columns
+B) Vertices (nodes) and edges
+C) Keys and values
+D) Roots and leaves only
+ANSWER: B
+
+[EASY]
+Q: Which data structure is used for Breadth-First Search (BFS)?
+A) Stack
+B) Queue
+C) Heap
+D) Hash set only
+ANSWER: B
+
+[EASY]
+Q: Which data structure is used (explicitly or through recursion) for Depth-First Search (DFS)?
+A) Queue
+B) Stack
+C) Priority queue
+D) Array list only
+ANSWER: B
+
+[EASY]
+Q: For a graph with V vertices, an adjacency matrix needs how much space?
+A) O(V)
+B) O(E)
+C) O(V^2)
+D) O(V + E)
+ANSWER: C
+
+[EASY]
+Q: A graph in which every edge has a direction is called:
+A) Undirected graph
+B) Directed graph (digraph)
+C) Complete graph
+D) Tree
+ANSWER: B
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        int[][] edges = {{0, 1}, {0, 2}, {1, 3}, {2, 3}, {3, 4}};
+        List<List<Integer>> g = new ArrayList<>();
+        for (int i = 0; i < 5; i++) g.add(new ArrayList<>());
+        for (int[] e : edges) { g.get(e[0]).add(e[1]); g.get(e[1]).add(e[0]); }
+        boolean[] seen = new boolean[5];
+        Queue<Integer> q = new LinkedList<>();
+        q.add(0); seen[0] = true;
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            System.out.print(u + " ");
+            for (int v : g.get(u)) if (!seen[v]) { seen[v] = true; q.add(v); }
+        }
+    }
+}
+END
+A) 0 1 2 3 4
+B) 0 1 3 4 2
+C) 0 2 3 1 4
+D) 0 1 3 2 4
+ANSWER: A
+HINT: BFS finishes all neighbours of a vertex before going deeper.
+EXPLAIN: 0 adds 1 and 2; 1 adds 3; 2 sees 3 already seen; 3 adds 4.
+
+[MEDIUM]
+Q: In an undirected graph, the sum of the degrees of all vertices equals:
+A) The number of edges
+B) Twice the number of edges
+C) The number of vertices
+D) V x E
+ANSWER: B
+HINT: Count how many endpoints each edge contributes.
+EXPLAIN: Every edge adds 1 to the degree of each of its two endpoints (handshake lemma).
+
+[MEDIUM]
+Q: Which of these is a valid topological order of the DAG with edges A->B, A->C, B->D, C->D?
+A) A C B D
+B) B A C D
+C) A D B C
+D) D C B A
+ANSWER: A
+HINT: Every vertex must appear before all vertices it has an edge to.
+EXPLAIN: A must come first and D last; B and C may appear in either order, so A C B D is valid.
+
+[HARD]
+Q: Dijkstra's algorithm may give WRONG shortest paths when:
+A) The graph is directed
+B) The graph contains negative edge weights
+C) The graph has cycles
+D) The graph is disconnected
+ANSWER: B
+HINT: Dijkstra finalises a vertex as soon as it is removed from the priority queue.
+EXPLAIN: A negative edge found later could make an already-finalised distance shorter; Bellman-Ford handles negative edges.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        final int INF = 1000000;
+        int[][] d = {
+            {0, 4, INF, 10},
+            {INF, 0, 3, INF},
+            {INF, INF, 0, 2},
+            {INF, INF, INF, 0}
+        };
+        int n = 4;
+        for (int k = 0; k < n; k++)
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    if (d[i][k] + d[k][j] < d[i][j]) d[i][j] = d[i][k] + d[k][j];
+        System.out.println(d[0][3] + " " + d[1][3]);
+    }
+}
+END
+A) 9 5
+B) 10 5
+C) 9 2
+D) 6 5
+ANSWER: A
+HINT: This is Floyd-Warshall. Compare the direct edge 0->3 with the path 0->1->2->3.
+EXPLAIN: 0->1->2->3 costs 4 + 3 + 2 = 9, cheaper than 10; 1->2->3 costs 3 + 2 = 5.
+
+# =====================================================================
+@subtopic Sorting & Searching
+
+[EASY]
+Q: What is the time complexity of binary search on a sorted array of n elements?
+A) O(n)
+B) O(log n)
+C) O(n log n)
+D) O(1)
+ANSWER: B
+
+[EASY]
+Q: Binary search requires the array to be:
+A) Sorted
+B) Of even length
+C) Stored as a linked list
+D) Free of negative numbers
+ANSWER: A
+
+[EASY]
+Q: Which sorting algorithm repeatedly swaps adjacent elements that are in the wrong order?
+A) Selection sort
+B) Bubble sort
+C) Merge sort
+D) Quick sort
+ANSWER: B
+
+[EASY]
+Q: Which sorting algorithm uses the divide-and-conquer approach and always runs in O(n log n)?
+A) Bubble sort
+B) Insertion sort
+C) Merge sort
+D) Selection sort
+ANSWER: C
+
+[EASY]
+Q: What is the worst-case time complexity of quicksort?
+A) O(n log n)
+B) O(n)
+C) O(n^2)
+D) O(log n)
+ANSWER: C
+EXPLAIN: It happens when the pivot is always the smallest or largest element, e.g. a sorted array with the first element as pivot.
+
+[MEDIUM]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    public static void main(String[] args) {
+        int[] a = {5, 2, 9, 1, 6};
+        for (int i = 0; i < 2; i++) {
+            int min = i;
+            for (int j = i + 1; j < a.length; j++) if (a[j] < a[min]) min = j;
+            int t = a[i]; a[i] = a[min]; a[min] = t;
+        }
+        for (int x : a) System.out.print(x + " ");
+    }
+}
+END
+A) 1 2 9 5 6
+B) 1 2 5 6 9
+C) 2 5 9 1 6
+D) 1 5 9 2 6
+ANSWER: A
+HINT: Only two passes of selection sort run. Each pass puts the smallest remaining value at position i.
+EXPLAIN: Pass 1 swaps 5 and 1 -> 1 2 9 5 6; pass 2 finds 2 already in place.
+
+[MEDIUM]
+Q: How many comparisons does binary search need, in the worst case, to search a sorted array of 1000 elements?
+A) About 10
+B) About 100
+C) About 500
+D) 1000
+ANSWER: A
+HINT: Each comparison halves the remaining range. What power of 2 is just above 1000?
+EXPLAIN: 2^10 = 1024 > 1000, so at most about 10 comparisons are needed.
+
+[MEDIUM]
+Q: What does this Python code print?
+CODE python
+def bsearch(a, x):
+    lo, hi, steps = 0, len(a) - 1, 0
+    while lo <= hi:
+        steps += 1
+        mid = (lo + hi) // 2
+        if a[mid] == x:
+            return mid, steps
+        if a[mid] < x:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return -1, steps
+
+print(bsearch([3, 8, 15, 23, 42, 57, 91], 57))
+END
+A) (5, 2)
+B) (5, 3)
+C) (6, 2)
+D) (-1, 3)
+ANSWER: A
+HINT: Track lo, hi and mid: the first mid is index 3.
+EXPLAIN: mid=3 (23 < 57) so lo=4; mid=5 holds 57: found at index 5 in 2 steps.
+
+[HARD]
+Q: Which statement about sorting stability is correct?
+A) Quicksort (standard in-place) is stable
+B) Merge sort is stable; heap sort is not
+C) Heap sort is stable; merge sort is not
+D) Selection sort is always stable
+ANSWER: B
+HINT: A stable sort keeps equal keys in their original relative order. Think about long-distance swaps.
+EXPLAIN: Merge sort keeps the left element first on ties; heap sort and in-place quicksort swap elements over long distances and can reorder equal keys.
+
+[HARD]
+Q: What is the output of this program?
+CODE java
+public class Main {
+    static int count = 0;
+    static void sort(int[] a, int lo, int hi) {
+        if (lo >= hi) return;
+        count++;
+        int p = a[hi], i = lo;
+        for (int j = lo; j < hi; j++) {
+            if (a[j] < p) { int t = a[i]; a[i] = a[j]; a[j] = t; i++; }
+        }
+        int t = a[i]; a[i] = a[hi]; a[hi] = t;
+        sort(a, lo, i - 1);
+        sort(a, i + 1, hi);
+    }
+    public static void main(String[] args) {
+        int[] a = {1, 2, 3, 4, 5};
+        sort(a, 0, a.length - 1);
+        System.out.println(count);
+    }
+}
+END
+A) 4
+B) 5
+C) 3
+D) 2
+ANSWER: A
+HINT: The last element is the pivot. On an already sorted array, how big is each partition?
+EXPLAIN: Each call partitions off only the pivot, leaving n-1 elements: calls happen for sizes 5, 4, 3, 2 — this is quicksort's O(n^2) worst case.

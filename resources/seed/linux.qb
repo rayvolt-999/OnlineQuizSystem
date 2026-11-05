@@ -1,0 +1,662 @@
+# Linux Commands question bank
+@subject Linux Commands | $_ | #7C3AED | Files, permissions, text processing, processes, scripting and networking
+
+# =====================================================================
+@subtopic Files & Directories
+
+[EASY]
+Q: Which command prints the current working directory?
+A) cd
+B) pwd
+C) ls
+D) dir
+ANSWER: B
+
+[EASY]
+Q: Which command lists files including hidden ones (names starting with a dot)?
+A) ls -l
+B) ls -a
+C) ls -h
+D) ls -r
+ANSWER: B
+
+[EASY]
+Q: Which command creates a new directory called projects?
+A) touch projects
+B) mkdir projects
+C) md projects
+D) newdir projects
+ANSWER: B
+
+[EASY]
+Q: What does cd .. do?
+A) Goes to the home directory
+B) Goes to the parent directory
+C) Goes to the root directory
+D) Lists the parent directory
+ANSWER: B
+
+[EASY]
+Q: Which command removes a directory and everything inside it?
+A) rmdir dir
+B) rm -r dir
+C) del dir
+D) rm dir
+ANSWER: B
+EXPLAIN: rmdir only removes empty directories; rm -r removes recursively (use with care).
+
+[MEDIUM]
+Q: What is the output of these commands (run in an empty directory)?
+CODE bash
+mkdir -p a/b/c
+touch a/x.txt a/b/y.txt a/b/c/z.txt
+find a -name "*.txt" | wc -l
+END
+A) 3
+B) 1
+C) 2
+D) 6
+ANSWER: A
+HINT: mkdir -p creates the whole path; find searches recursively.
+EXPLAIN: find lists x.txt, y.txt and z.txt at all depths; wc -l counts the 3 lines.
+
+[MEDIUM]
+Q: What is the output of these commands (run in an empty directory)?
+CODE bash
+echo hello > f.txt
+cp f.txt g.txt
+mv g.txt h.txt
+echo world >> h.txt
+ls
+cat h.txt | wc -l
+END
+A) f.txt h.txt 2
+B) f.txt g.txt h.txt 2
+C) h.txt 1
+D) f.txt h.txt 1
+ANSWER: A
+HINT: mv renames; >> appends a line instead of overwriting.
+EXPLAIN: g.txt is renamed to h.txt, so only f.txt and h.txt remain; h.txt has two lines.
+
+[MEDIUM]
+Q: You are in /home/ravi/projects/app. Which command takes you to /home/ravi/notes?
+A) cd ../../notes
+B) cd ../notes
+C) cd ~/projects/notes
+D) cd /notes
+ANSWER: A
+HINT: Count how many levels you must go up before you can go down into notes.
+EXPLAIN: app -> projects (..), projects -> ravi (../..), then into notes.
+
+[HARD]
+Q: What is the output of these commands (run in an empty directory)?
+CODE bash
+echo data > orig.txt
+ln orig.txt hard.txt
+ln -s orig.txt soft.txt
+rm orig.txt
+cat hard.txt
+cat soft.txt 2>/dev/null || echo broken
+END
+A) data broken
+B) broken broken
+C) data data
+D) broken data
+ANSWER: A
+HINT: A hard link points to the same inode; a symbolic link points to the file NAME.
+EXPLAIN: Deleting orig.txt removes one name, but hard.txt still references the inode. soft.txt points to a name that no longer exists.
+
+[HARD]
+Q: What is the output of these commands (run in an empty directory)?
+CODE bash
+touch a.log b.log c.txt
+for f in *.log; do mv "$f" "${f%.log}.bak"; done
+ls
+END
+A) a.bak b.bak c.txt
+B) a.log.bak b.log.bak c.txt
+C) a.bak b.bak c.bak
+D) a.log b.log c.txt
+ANSWER: A
+HINT: ${f%.log} removes the shortest match of .log from the END of $f.
+EXPLAIN: Each .log file is renamed to the same name with .bak; c.txt is not matched by *.log.
+
+# =====================================================================
+@subtopic Permissions & Users
+
+[EASY]
+Q: In the permission string -rwxr-xr--, what permissions does the group have?
+A) rwx
+B) r-x
+C) r--
+D) ---
+ANSWER: B
+EXPLAIN: After the file type character come owner (rwx), group (r-x) and others (r--).
+
+[EASY]
+Q: Which command changes the permissions of a file?
+A) chown
+B) chmod
+C) chgrp
+D) perm
+ANSWER: B
+
+[EASY]
+Q: What numeric value does the permission r (read) have in octal notation?
+A) 1
+B) 2
+C) 4
+D) 7
+ANSWER: C
+EXPLAIN: r = 4, w = 2, x = 1.
+
+[EASY]
+Q: Which command runs a single command with administrator (root) privileges?
+A) su -c only
+B) sudo
+C) root
+D) admin
+ANSWER: B
+
+[EASY]
+Q: Which command changes the owner of a file?
+A) chmod
+B) chown
+C) usermod
+D) passwd
+ANSWER: B
+
+[MEDIUM]
+Q: After chmod 754 script.sh, what is the permission string?
+A) rwxr-xr--
+B) rwxrw-r--
+C) rwxr-x--x
+D) rw-r-xr--
+ANSWER: A
+HINT: Convert each digit separately: 7 = 4+2+1, 5 = 4+1, 4 = 4.
+EXPLAIN: 7 = rwx (owner), 5 = r-x (group), 4 = r-- (others).
+
+[MEDIUM]
+Q: What is the output of these commands (run in an empty directory)?
+CODE bash
+touch f
+chmod 640 f
+chmod g+w,o+r f
+stat -c %a f
+END
+A) 664
+B) 640
+C) 674
+D) 666
+ANSWER: A
+HINT: Start from 640 and add write for group and read for others.
+EXPLAIN: Group goes from 4 (r) to 6 (rw); others from 0 to 4 (r): 664.
+
+[MEDIUM]
+Q: The umask is 022. What permissions does a newly created regular file get?
+A) 644 (rw-r--r--)
+B) 755 (rwxr-xr-x)
+C) 666 (rw-rw-rw-)
+D) 600 (rw-------)
+ANSWER: A
+HINT: New files start from 666 (no execute bit); the umask bits are removed.
+EXPLAIN: 666 with group and others write bits (022) masked off gives 644. Directories start from 777 and would get 755.
+
+[HARD]
+Q: A directory has permissions drwx--x--x. What can another (non-owner) user do?
+A) List the directory contents with ls
+B) Access a file inside if they already know its exact name (and the file permits it), but cannot list the directory
+C) Create new files in it
+D) Nothing at all
+ANSWER: B
+HINT: For directories, r means "list names", w means "create/delete entries", x means "enter / traverse".
+EXPLAIN: With only x, others can traverse into the directory and open known filenames, but without r they cannot list it, and without w they cannot create files.
+
+[HARD]
+Q: What special permission does chmod u+s /usr/bin/passwd set, and why is it needed?
+A) Sticky bit, so only owners can delete files
+B) SetUID, so the program runs with the file owner's (root's) privileges and can update /etc/shadow
+C) SetGID, so new files inherit the group
+D) It makes the file immutable
+ANSWER: B
+HINT: The s appears in the OWNER execute position.
+EXPLAIN: SetUID makes the process run with the effective UID of the file owner (root), allowing ordinary users to change their own password in the protected shadow file.
+
+# =====================================================================
+@subtopic Text Processing & Pipes
+
+[EASY]
+Q: Which command searches for lines matching a pattern in a file?
+A) find
+B) grep
+C) locate
+D) search
+ANSWER: B
+
+[EASY]
+Q: What does the | (pipe) symbol do?
+A) Runs two commands at the same time without connecting them
+B) Sends the output of the first command as input to the second
+C) Writes output to a file
+D) Comments out the rest of the line
+ANSWER: B
+
+[EASY]
+Q: Which command shows the first 10 lines of a file?
+A) tail
+B) head
+C) more
+D) first
+ANSWER: B
+
+[EASY]
+Q: What does wc -l file.txt print?
+A) The number of words
+B) The number of lines
+C) The number of characters
+D) The longest line
+ANSWER: B
+
+[EASY]
+Q: Which redirection appends output to the end of a file instead of overwriting it?
+A) >
+B) >>
+C) <
+D) 2>
+ANSWER: B
+
+[MEDIUM]
+Q: What is the output of this command?
+CODE bash
+printf "apple\nbanana\napple\ncherry\nbanana\napple\n" | sort | uniq -c | sort -rn | head -1
+END
+A) 3 apple
+B) 2 banana
+C) 1 cherry
+D) apple 3
+ANSWER: A
+HINT: uniq -c only merges ADJACENT duplicates, which is why sort comes first.
+EXPLAIN: The counts are apple 3, banana 2, cherry 1; sort -rn puts the highest count first.
+
+[MEDIUM]
+Q: What is the output of this command?
+CODE bash
+printf "id,name,marks\n1,asha,82\n2,ravi,91\n3,kiran,76\n" | awk -F, 'NR>1 && $3>80 {print $2}'
+END
+A) asha ravi
+B) ravi
+C) asha ravi kiran
+D) name asha ravi
+ANSWER: A
+HINT: -F, sets the field separator. NR>1 skips the header line.
+EXPLAIN: Rows with marks above 80 are asha (82) and ravi (91); awk prints the second field, one per line.
+
+[MEDIUM]
+Q: What is the output of this command?
+CODE bash
+echo "the cat sat on the mat" | sed 's/at/og/g' | cut -d' ' -f2-4
+END
+A) cog sog on
+B) cat sat on
+C) cog sat on
+D) the cog sog
+ANSWER: A
+HINT: The g flag replaces every occurrence on the line. cut -f2-4 keeps fields 2 to 4.
+EXPLAIN: sed gives "the cog sog on the mog"; fields 2-4 are "cog sog on".
+
+[HARD]
+Q: What is the output of this command?
+CODE bash
+printf "error disk\nwarn cpu\nerror net\ninfo ok\nERROR mem\n" | grep -ic '^error'
+END
+A) 3
+B) 2
+C) 4
+D) 1
+ANSWER: A
+HINT: -i ignores case and -c prints the count of matching lines. ^ anchors at line start.
+EXPLAIN: "error disk", "error net" and "ERROR mem" match case-insensitively at the start: 3.
+
+[HARD]
+Q: What is the output of these commands?
+CODE bash
+printf "b 3\na 1\nb 5\na 4\nc 2\n" | awk '{s[$1]+=$2} END {for (k in s) print k, s[k]}' | sort
+END
+A) a 5 b 8 c 2
+B) a 1 b 3 c 2
+C) b 8 a 5 c 2
+D) a 4 b 5 c 2
+ANSWER: A
+HINT: s is an associative array keyed by the first column; values are summed per key.
+EXPLAIN: a = 1 + 4 = 5, b = 3 + 5 = 8, c = 2. awk's for-in order is unspecified, so the output is piped through sort.
+
+# =====================================================================
+@subtopic Processes & System
+
+[EASY]
+Q: Which command shows a live, continuously updated view of running processes?
+A) ps
+B) top
+C) jobs
+D) proc
+ANSWER: B
+
+[EASY]
+Q: Which command sends a signal (by default SIGTERM) to a process ID?
+A) stop
+B) kill
+C) end
+D) exit
+ANSWER: B
+
+[EASY]
+Q: What does adding & at the end of a command do?
+A) Runs it with root privileges
+B) Runs it in the background
+C) Runs it twice
+D) Saves its output
+ANSWER: B
+
+[EASY]
+Q: Which command shows disk space usage of mounted file systems?
+A) du
+B) df
+C) free
+D) lsblk only
+ANSWER: B
+EXPLAIN: df shows free/used space per file system; du shows the size of directories and files.
+
+[EASY]
+Q: Which command shows how much RAM is used and free?
+A) free -h
+B) df -h
+C) mem
+D) ram
+ANSWER: A
+
+[MEDIUM]
+Q: What is the difference between kill -15 PID and kill -9 PID?
+A) -15 (SIGTERM) asks the process to exit cleanly and can be handled; -9 (SIGKILL) cannot be caught and stops it immediately
+B) -9 is polite and -15 is forced
+C) They are identical
+D) -15 pauses the process; -9 resumes it
+ANSWER: A
+HINT: Which signal can a program catch to save its work before exiting?
+EXPLAIN: SIGTERM lets the program clean up (close files, etc.); SIGKILL is handled by the kernel and cannot be ignored.
+
+[MEDIUM]
+Q: What is the output of this command?
+CODE bash
+sleep 0.2 & wait $!; echo "exit=$?"
+END
+A) exit=0
+B) exit=1
+C) exit=$?
+D) Nothing
+ANSWER: A
+HINT: $! is the PID of the last background job; wait returns that job's exit status.
+EXPLAIN: sleep finishes successfully, so wait returns 0 and $? is 0.
+
+[MEDIUM]
+Q: A process shows state Z in ps output. What does that mean?
+A) It is sleeping
+B) It is a zombie: it has finished but its parent has not collected its exit status
+C) It is using zero CPU
+D) It is being debugged
+ANSWER: B
+HINT: The process already terminated, but an entry still exists in the process table.
+EXPLAIN: A zombie has exited but its parent has not called wait() to read the exit status, so its process-table entry remains until the parent does (or the parent dies).
+
+[HARD]
+Q: What is the output of these commands?
+CODE bash
+x=1
+( x=2; echo "in:$x" )
+echo "out:$x"
+{ x=3; }
+echo "now:$x"
+END
+A) in:2 out:1 now:3
+B) in:2 out:2 now:3
+C) in:2 out:1 now:1
+D) in:1 out:1 now:3
+ANSWER: A
+HINT: ( ... ) runs in a subshell (a child process); { ...; } runs in the current shell.
+EXPLAIN: Changes inside the subshell are lost when it exits; the brace group changes x in the current shell.
+
+[HARD]
+Q: Which command lists the 3 processes using the most memory?
+A) ps aux --sort=-%mem | head -4
+B) ps aux | sort mem | tail -3
+C) top -mem 3
+D) free --top 3
+ANSWER: A
+HINT: A minus sign in --sort means descending. Remember the header line of ps.
+EXPLAIN: Sorting by %mem descending and taking 4 lines gives the header plus the top 3 processes.
+
+# =====================================================================
+@subtopic Shell Scripting
+
+[EASY]
+Q: What is the first line of a bash script that tells the system which interpreter to use?
+A) #include <bash>
+B) #!/bin/bash
+C) //bash
+D) @bash
+ANSWER: B
+EXPLAIN: This line is called the shebang.
+
+[EASY]
+Q: In a shell script, what does $1 refer to?
+A) The script name
+B) The first command-line argument
+C) The exit status
+D) The number of arguments
+ANSWER: B
+EXPLAIN: $0 is the script name, $# is the number of arguments, $? is the last exit status.
+
+[EASY]
+Q: Which variable holds the exit status of the last command?
+A) $!
+B) $?
+C) $$
+D) $#
+ANSWER: B
+
+[EASY]
+Q: How do you make script.sh executable?
+A) chmod +x script.sh
+B) exec script.sh
+C) run script.sh
+D) chmod 000 script.sh
+ANSWER: A
+
+[EASY]
+Q: Which is the correct way to assign a variable in bash?
+A) name = "ravi"
+B) name="ravi"
+C) $name="ravi"
+D) set name "ravi"
+ANSWER: B
+EXPLAIN: There must be no spaces around = in a bash assignment.
+
+[MEDIUM]
+Q: What is the output of this script?
+CODE bash
+sum=0
+for i in 1 2 3 4 5; do
+  if [ $((i % 2)) -eq 0 ]; then
+    continue
+  fi
+  sum=$((sum + i))
+done
+echo $sum
+END
+A) 9
+B) 15
+C) 6
+D) 5
+ANSWER: A
+HINT: continue skips the rest of the loop body for even numbers.
+EXPLAIN: Only odd values are added: 1 + 3 + 5 = 9.
+
+[MEDIUM]
+Q: What is the output of this script?
+CODE bash
+name="Linux"
+echo '$name' "$name" ${#name} ${name,,}
+END
+A) $name Linux 5 linux
+B) Linux Linux 5 linux
+C) $name Linux 5 LINUX
+D) Linux $name 5 linux
+ANSWER: A
+HINT: Single quotes prevent expansion; ${#var} is the length; ${var,,} converts to lowercase.
+EXPLAIN: '$name' is printed literally; "$name" expands to Linux; the length is 5; ${name,,} is linux.
+
+[MEDIUM]
+Q: What is the output of this script?
+CODE bash
+count() { echo $#; }
+count a "b c" d
+count "$(echo x y z)"
+count $(echo x y z)
+END
+A) 3 1 3
+B) 4 3 3
+C) 3 3 3
+D) 4 1 3
+ANSWER: A
+HINT: Quotes keep words together as ONE argument. Unquoted command substitution is split on spaces.
+EXPLAIN: "b c" is one argument (3 total); the quoted substitution is one argument; the unquoted one splits into 3.
+
+[HARD]
+Q: What is the output of this script?
+CODE bash
+f() {
+  local x=5
+  y=7
+  return 3
+}
+x=1; y=1
+f
+echo "$? $x $y"
+END
+A) 3 1 7
+B) 0 5 7
+C) 3 5 7
+D) 3 1 1
+ANSWER: A
+HINT: local limits a variable to the function. return sets the function's exit status.
+EXPLAIN: $? is 3 from return; x was local inside f so the outer x stays 1; y was global, so it becomes 7.
+
+[HARD]
+Q: What is the output of this script?
+CODE bash
+set -e
+false || echo "handled"
+echo "after"
+false
+echo "never"
+END
+A) handled after
+B) handled after never
+C) Nothing
+D) after never
+ANSWER: A
+HINT: set -e exits on an unhandled failing command, but not on a command that is part of a || list.
+EXPLAIN: The first false is handled by ||, so the script continues; the second false stops the script before "never".
+
+# =====================================================================
+@subtopic Networking Commands
+
+[EASY]
+Q: Which command checks whether a remote host is reachable by sending ICMP echo requests?
+A) ping
+B) ssh
+C) curl
+D) route
+ANSWER: A
+
+[EASY]
+Q: Which command shows the IP addresses of the network interfaces on modern Linux?
+A) ip addr
+B) ipconfig
+C) netaddr
+D) showip
+ANSWER: A
+EXPLAIN: ifconfig is older and may not be installed; ipconfig is the Windows command.
+
+[EASY]
+Q: Which command opens a secure remote shell on another machine?
+A) telnet
+B) ssh
+C) ftp
+D) rsh
+ANSWER: B
+
+[EASY]
+Q: Which command downloads a web page or file from a URL?
+A) curl or wget
+B) ping
+C) nslookup
+D) traceroute
+ANSWER: A
+
+[EASY]
+Q: Which command looks up the IP address of a domain name using DNS?
+A) dig or nslookup
+B) ping -d
+C) whoami
+D) hostnamectl
+ANSWER: A
+
+[MEDIUM]
+Q: Which command lists all listening TCP ports along with the process using each?
+A) ss -tlnp
+B) ping -l
+C) ip route
+D) netstat -r
+ANSWER: A
+HINT: Look for the options meaning TCP, listening, numeric and process.
+EXPLAIN: ss -t (TCP) -l (listening) -n (numeric ports) -p (process); netstat -tlnp is the older equivalent.
+
+[MEDIUM]
+Q: Which command copies a local file report.pdf to the home directory of user ravi on host 10.0.0.5 over SSH?
+A) scp report.pdf ravi@10.0.0.5:~/
+B) cp report.pdf ravi@10.0.0.5
+C) ssh report.pdf 10.0.0.5
+D) ftp report.pdf ravi
+ANSWER: A
+HINT: The command name is "secure copy", and the remote path is written user@host:path.
+EXPLAIN: scp copies files over the SSH protocol; rsync -e ssh is another option.
+
+[MEDIUM]
+Q: Which command shows each router hop on the path to a destination host?
+A) traceroute
+B) ping -c 1
+C) arp
+D) hostname
+ANSWER: A
+HINT: It works by sending packets with increasing TTL values.
+EXPLAIN: Each router that drops a packet whose TTL reached zero replies, revealing one hop at a time.
+
+[HARD]
+Q: What does curl -s -o /dev/null -w "%{http_code}" https://example.com print on success?
+A) The HTTP status code only, such as 200
+B) The full HTML page
+C) The response headers
+D) Nothing at all
+ANSWER: A
+HINT: -o sends the body to /dev/null, -s hides the progress bar, -w prints a custom format after the transfer.
+EXPLAIN: Only the write-out variable %{http_code} is printed — handy for health-check scripts.
+
+[HARD]
+Q: In ip route output, the line "default via 192.168.1.1 dev wlan0" means:
+A) All traffic without a more specific route is sent to the gateway 192.168.1.1 through interface wlan0
+B) 192.168.1.1 is this computer's own IP address
+C) Only traffic to 192.168.1.1 uses wlan0
+D) DNS queries go to 192.168.1.1
+ANSWER: A
+HINT: "default" is the route for 0.0.0.0/0.
+EXPLAIN: The default route matches every destination with no more specific route, sending it to the gateway (usually the home router).

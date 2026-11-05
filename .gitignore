@@ -1,0 +1,15 @@
+# build output (recreated by build.sh / build.bat)
+out/
+out-test/
+out-ide/
+dist/
+*.class
+
+# local database (created on first run, holds each user's accounts and results)
+data/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.idea/
+*.iml

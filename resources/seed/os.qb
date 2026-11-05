@@ -1,0 +1,726 @@
+# Operating Systems question bank
+@subject Operating Systems | OS | #DC2626 | Processes, scheduling, synchronisation, deadlocks, memory and storage
+
+# =====================================================================
+@subtopic Processes & Threads
+
+[EASY]
+Q: A program in execution is called a:
+A) File
+B) Process
+C) Compiler
+D) Kernel
+ANSWER: B
+
+[EASY]
+Q: Which data structure does the OS keep for every process (state, registers, PID, open files)?
+A) Page table only
+B) Process Control Block (PCB)
+C) File allocation table
+D) Inode
+ANSWER: B
+
+[EASY]
+Q: A process in the READY state is waiting for:
+A) I/O to finish
+B) The CPU
+C) A signal from the user
+D) Termination
+ANSWER: B
+
+[EASY]
+Q: Which system call creates a new process in Unix/Linux?
+A) exec()
+B) fork()
+C) wait()
+D) exit()
+ANSWER: B
+
+[EASY]
+Q: Which of these is shared between threads of the same process?
+A) Stack
+B) Program counter
+C) Registers
+D) Heap memory and global variables
+ANSWER: D
+
+[MEDIUM]
+Q: How many lines does this C program print?
+CODE c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main(void) {
+    fork();
+    fork();
+    fork();
+    printf("hello\n");
+    while (wait(NULL) > 0);
+    return 0;
+}
+END
+A) 8
+B) 3
+C) 6
+D) 4
+ANSWER: A
+HINT: Each fork() doubles the number of processes that run the following code.
+EXPLAIN: After n forks there are 2^n processes: 2^3 = 8, and each prints once.
+
+[MEDIUM]
+Q: What is the output of this C program?
+CODE c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int x = 10;
+
+int main(void) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        x += 5;
+        printf("child %d\n", x);
+        return 0;
+    }
+    wait(NULL);
+    x -= 5;
+    printf("parent %d\n", x);
+    return 0;
+}
+END
+A) child 15 parent 5
+B) child 15 parent 10
+C) child 15 parent 15
+D) parent 5 child 15
+ANSWER: A
+HINT: After fork() the child gets its own COPY of the parent's memory. wait() makes the parent print last.
+EXPLAIN: The child changes its copy to 15; the parent's x is still 10 and becomes 5.
+
+[MEDIUM]
+Q: Which statement about a context switch is correct?
+A) The OS saves the state (registers, PC) of the running process in its PCB and loads the state of the next process
+B) It copies the whole process memory to disk every time
+C) It happens only when a process terminates
+D) It requires a reboot
+ANSWER: A
+HINT: Think about what must be remembered to resume a process exactly where it stopped.
+EXPLAIN: The switch itself does no useful work, so it is pure overhead; switching threads of the same process is cheaper because the address space stays.
+
+[HARD]
+Q: What is the output of this C program?
+CODE c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main(void) {
+    int n = 0;
+    for (int i = 0; i < 2; i++) {
+        if (fork() == 0) {
+            n++;
+        } else {
+            wait(NULL);
+        }
+    }
+    printf("%d ", n);
+    fflush(stdout);
+    return 0;
+}
+END
+A) 2 1 1 0
+B) 0 1 1 2
+C) 1 1 1 1
+D) 2 2 1 0
+ANSWER: A
+HINT: Draw the process tree. Every parent waits for its child before continuing the loop or printing.
+EXPLAIN: The deepest child (two increments) prints first: 2; then its parent (1); then the second child of the original (1); finally the original process (0).
+
+[HARD]
+Q: A zombie and an orphan process differ in that:
+A) A zombie has finished but its parent has not called wait(); an orphan is still running but its parent has exited (it is adopted by init/systemd)
+B) A zombie is still running; an orphan has finished
+C) Both are the same
+D) An orphan is a process without a PCB
+ANSWER: A
+HINT: Ask "who has terminated: the child or the parent?"
+EXPLAIN: Zombies hold only a process-table entry until reaped; orphans are re-parented to PID 1, which reaps them when they finish.
+
+# =====================================================================
+@subtopic CPU Scheduling
+
+[EASY]
+Q: Which scheduling algorithm runs processes in the order they arrive?
+A) FCFS (First Come First Served)
+B) SJF
+C) Round Robin
+D) Priority
+ANSWER: A
+
+[EASY]
+Q: Round Robin scheduling gives each process a fixed:
+A) Priority
+B) Time quantum (time slice)
+C) Memory block
+D) Number of instructions
+ANSWER: B
+
+[EASY]
+Q: Which algorithm gives the minimum average waiting time for a given set of processes (all available at time 0)?
+A) FCFS
+B) Shortest Job First
+C) Round Robin
+D) Longest Job First
+ANSWER: B
+
+[EASY]
+Q: Starvation in priority scheduling can be solved by:
+A) Aging (gradually increasing the priority of waiting processes)
+B) Increasing the time quantum
+C) Using more memory
+D) Killing low-priority processes
+ANSWER: A
+
+[EASY]
+Q: Turnaround time of a process is:
+A) Completion time - arrival time
+B) Burst time - waiting time
+C) Arrival time - start time
+D) The time slice
+ANSWER: A
+EXPLAIN: Waiting time = turnaround time - burst time.
+
+[MEDIUM]
+Q: Processes P1, P2, P3 arrive at time 0 with burst times 24, 3 and 3 and are scheduled FCFS in that order. What is the average waiting time?
+A) 17
+B) 3
+C) 10
+D) 27
+ANSWER: A
+HINT: Waiting time of each process = the time it starts (all arrive at 0).
+EXPLAIN: P1 waits 0, P2 waits 24, P3 waits 27: (0 + 24 + 27) / 3 = 17. Running the short jobs first (SJF) would give 3.
+
+[MEDIUM]
+Q: Processes P1 (burst 5), P2 (burst 3) and P3 (burst 1) all arrive at time 0. With Round Robin and quantum 2 (order P1, P2, P3), at what time does P1 finish?
+A) 9
+B) 7
+C) 5
+D) 8
+ANSWER: A
+HINT: Write the Gantt chart: P1 0-2, P2 2-4, P3 4-5, then continue the cycle.
+EXPLAIN: P1 0-2, P2 2-4, P3 4-5 (done), P1 5-7, P2 7-8 (done), P1 8-9 (done).
+
+[MEDIUM]
+Q: What does this Python simulation of SJF (non-preemptive, all arriving at 0) print?
+CODE python
+bursts = {"P1": 6, "P2": 8, "P3": 7, "P4": 3}
+t, waits = 0, {}
+for p, b in sorted(bursts.items(), key=lambda kv: kv[1]):
+    waits[p] = t
+    t += b
+print(sum(waits.values()) / len(waits))
+END
+A) 7.0
+B) 10.25
+C) 6.0
+D) 8.0
+ANSWER: A
+HINT: Order by burst: P4 (3), P1 (6), P3 (7), P2 (8). Each process waits for the bursts before it.
+EXPLAIN: Waits are 0, 3, 9, 16, average 28 / 4 = 7.0.
+
+[HARD]
+Q: Using preemptive SJF (SRTF): P1 (arrival 0, burst 8), P2 (arrival 1, burst 4), P3 (arrival 2, burst 9), P4 (arrival 3, burst 5). What is the average waiting time?
+A) 6.5
+B) 7.75
+C) 5.75
+D) 8.0
+ANSWER: A
+HINT: At each arrival compare the new burst with the REMAINING time of the running process. Gantt: P1 0-1, P2 1-5, P4 5-10, P1 10-17, P3 17-26.
+EXPLAIN: Waiting = finish - arrival - burst: P1 17-0-8 = 9, P2 5-1-4 = 0, P3 26-2-9 = 15, P4 10-3-5 = 2. (9 + 0 + 15 + 2) / 4 = 6.5.
+
+[HARD]
+Q: In Round Robin, what happens as the time quantum becomes very large, and as it becomes very small?
+A) Very large: behaves like FCFS; very small: context-switch overhead dominates
+B) Very large: behaves like SJF; very small: behaves like FCFS
+C) Quantum size never affects performance
+D) Very large: starvation of all processes; very small: deadlock
+ANSWER: A
+HINT: Consider a quantum longer than every burst, and a quantum close to the context-switch time.
+EXPLAIN: A quantum longer than all bursts means no preemption (FCFS). A tiny quantum causes so many switches that little useful work is done.
+
+# =====================================================================
+@subtopic Synchronization
+
+[EASY]
+Q: The part of a program that accesses shared data and must not be executed by two processes at once is the:
+A) Critical section
+B) Kernel
+C) Interrupt handler
+D) Stack frame
+ANSWER: A
+
+[EASY]
+Q: A semaphore is mainly used for:
+A) Memory allocation
+B) Process/thread synchronisation
+C) File compression
+D) Disk formatting
+ANSWER: B
+
+[EASY]
+Q: A binary semaphore can take which values?
+A) Any integer
+B) Only 0 and 1
+C) Only negative values
+D) 0 to 255
+ANSWER: B
+
+[EASY]
+Q: A race condition happens when:
+A) The result depends on the unpredictable order in which threads access shared data
+B) Two programs use the same CPU
+C) A process runs too fast
+D) The disk is full
+ANSWER: A
+
+[EASY]
+Q: Which three requirements must a correct critical-section solution satisfy?
+A) Mutual exclusion, progress and bounded waiting
+B) Speed, safety and size
+C) Paging, segmentation and swapping
+D) Fork, exec and wait
+ANSWER: A
+
+[MEDIUM]
+Q: A counting semaphore S is initialised to 3. Five processes each call wait(S) (P operation) without any signal. How many processes are blocked?
+A) 2
+B) 3
+C) 5
+D) 0
+ANSWER: A
+HINT: Each wait decrements S; a process blocks when no units remain.
+EXPLAIN: The first three get a unit (S reaches 0); the remaining two block (S conceptually -2).
+
+[MEDIUM]
+Q: What is the output of this C program?
+CODE c
+#include <stdio.h>
+#include <pthread.h>
+
+int counter = 0;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+void *work(void *arg) {
+    for (int i = 0; i < 100000; i++) {
+        pthread_mutex_lock(&lock);
+        counter++;
+        pthread_mutex_unlock(&lock);
+    }
+    return NULL;
+}
+
+int main(void) {
+    pthread_t t1, t2;
+    pthread_create(&t1, NULL, work, NULL);
+    pthread_create(&t2, NULL, work, NULL);
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+    printf("%d\n", counter);
+    return 0;
+}
+END
+A) 200000
+B) A random number below 200000
+C) 100000
+D) 0
+ANSWER: A
+HINT: Is every increment protected, and does main wait for both threads?
+EXPLAIN: The mutex makes counter++ mutually exclusive and pthread_join waits for both threads, so no update is lost.
+
+[MEDIUM]
+Q: In the producer-consumer problem with a bounded buffer of size N, which semaphores are typically used?
+A) mutex = 1, empty = N, full = 0
+B) mutex = 0, empty = 0, full = N
+C) mutex = N, empty = 1, full = 1
+D) Only one semaphore initialised to N
+ANSWER: A
+HINT: Producers wait for empty slots, consumers wait for full slots, and both need exclusive buffer access.
+EXPLAIN: empty counts free slots (starts at N), full counts filled slots (starts at 0), and mutex protects the buffer itself.
+
+[HARD]
+Q: Peterson's solution for two processes uses flag[2] and turn. Process i runs: flag[i] = true; turn = j; while (flag[j] && turn == j); /* critical section */ flag[i] = false. Why is turn set to the OTHER process?
+A) To be polite: if both want to enter, the one that wrote turn last waits, guaranteeing mutual exclusion without deadlock
+B) To make process j enter twice
+C) Because turn must always equal j
+D) To cause starvation deliberately
+ANSWER: A
+HINT: Consider both processes setting their flags at the same time; only one value of turn survives.
+EXPLAIN: The last writer of turn gives way, so exactly one process proceeds (mutual exclusion), and the other enters next (progress and bounded waiting).
+
+[HARD]
+Q: In the producer-consumer solution, what goes wrong if the producer calls wait(mutex) BEFORE wait(empty)?
+A) Deadlock: when the buffer is full the producer sleeps on empty while holding the mutex, so the consumer can never enter to free a slot
+B) Nothing; the order does not matter
+C) Items are produced twice
+D) The consumer reads an empty buffer
+ANSWER: A
+HINT: What does the consumer need to acquire before it can signal empty?
+EXPLAIN: The producer blocks inside the critical section holding mutex; the consumer blocks on mutex and can never signal empty. Always wait on the counting semaphore first.
+
+# =====================================================================
+@subtopic Deadlocks
+
+[EASY]
+Q: Which of these is NOT one of the four necessary conditions for deadlock?
+A) Mutual exclusion
+B) Hold and wait
+C) Preemption
+D) Circular wait
+ANSWER: C
+EXPLAIN: The condition is NO preemption.
+
+[EASY]
+Q: The Banker's algorithm is used for:
+A) Deadlock avoidance
+B) Page replacement
+C) Disk scheduling
+D) CPU scheduling
+ANSWER: A
+
+[EASY]
+Q: A resource allocation graph with a cycle, where every resource has a single instance, means:
+A) A deadlock exists
+B) There is no deadlock
+C) The system is idle
+D) Memory is full
+ANSWER: A
+EXPLAIN: With multiple instances per resource, a cycle means deadlock is possible but not certain.
+
+[EASY]
+Q: Requiring processes to request resources in a fixed global order prevents which condition?
+A) Mutual exclusion
+B) Circular wait
+C) No preemption
+D) Hold and wait
+ANSWER: B
+
+[EASY]
+Q: Restarting the computer or killing processes to break a deadlock is part of:
+A) Deadlock recovery
+B) Deadlock prevention
+C) Deadlock avoidance
+D) Scheduling
+ANSWER: A
+
+[MEDIUM]
+Q: A system has 12 tape drives and 3 processes with maximum needs P0 = 10, P1 = 4, P2 = 9. Currently P0 holds 5, P1 holds 2, P2 holds 2. Is the state safe?
+A) Yes, safe sequence P1, P0, P2
+B) No, it is unsafe
+C) Yes, safe sequence P0, P1, P2
+D) Yes, safe sequence P2, P0, P1
+ANSWER: A
+HINT: Available = 12 - (5 + 2 + 2) = 3. Find a process whose remaining need fits in 3.
+EXPLAIN: P1 needs 2 (≤3) -> available 5; P0 needs 5 -> available 10; P2 needs 7 -> done. Safe sequence P1, P0, P2.
+
+[MEDIUM]
+Q: Five dining philosophers each pick up the left fork then the right fork. Which simple change prevents deadlock?
+A) Let one philosopher pick up the right fork first (break the circular wait)
+B) Add more food
+C) Let every philosopher pick up the left fork twice
+D) Give each philosopher a higher priority
+ANSWER: A
+HINT: Deadlock needs every philosopher to hold one fork and wait for the next in a circle.
+EXPLAIN: Making one philosopher asymmetric breaks the cycle; another option is allowing at most four philosophers to sit at once.
+
+[MEDIUM]
+Q: What does this Python Banker's safety check print?
+CODE python
+avail = [3, 3, 2]
+alloc = {"P0": [0, 1, 0], "P1": [2, 0, 0], "P2": [3, 0, 2], "P3": [2, 1, 1], "P4": [0, 0, 2]}
+need  = {"P0": [7, 4, 3], "P1": [1, 2, 2], "P2": [6, 0, 0], "P3": [0, 1, 1], "P4": [4, 3, 1]}
+order, done = [], set()
+while len(done) < len(alloc):
+    for p in alloc:
+        if p not in done and all(n <= a for n, a in zip(need[p], avail)):
+            avail = [a + x for a, x in zip(avail, alloc[p])]
+            done.add(p)
+            order.append(p)
+            break
+    else:
+        break
+print(order)
+END
+A) ['P1', 'P3', 'P0', 'P2', 'P4']
+B) ['P1', 'P3', 'P4', 'P0', 'P2']
+C) ['P0', 'P1', 'P2', 'P3', 'P4']
+D) []
+ANSWER: A
+HINT: Each round restarts the scan from P0 and takes the FIRST process whose need fits the available vector.
+EXPLAIN: avail 332 -> P1 fits (532) -> P3 fits (743) -> rescan: P0 (743) fits (753) -> P2 (10 5 5) -> P4. The state is safe.
+
+[HARD]
+Q: A system has 3 identical resources shared by processes that each need at most 2. What is the maximum number of processes for which deadlock is impossible?
+A) 2
+B) 3
+C) 1
+D) 4
+ANSWER: A
+HINT: Worst case: every process holds (max - 1) resources. Deadlock is impossible if one extra resource is still free.
+EXPLAIN: With n processes holding 1 each, n + 1 ≤ 3 must hold, so n ≤ 2. With 3 processes each holding one, all wait forever.
+
+[HARD]
+Q: What is the output of this C program (it acquires locks in a consistent order)?
+CODE c
+#include <stdio.h>
+#include <pthread.h>
+
+pthread_mutex_t a = PTHREAD_MUTEX_INITIALIZER, b = PTHREAD_MUTEX_INITIALIZER;
+int total = 0;
+
+void *t1(void *x) {
+    for (int i = 0; i < 1000; i++) {
+        pthread_mutex_lock(&a); pthread_mutex_lock(&b);
+        total += 1;
+        pthread_mutex_unlock(&b); pthread_mutex_unlock(&a);
+    }
+    return NULL;
+}
+void *t2(void *x) {
+    for (int i = 0; i < 1000; i++) {
+        pthread_mutex_lock(&a); pthread_mutex_lock(&b);
+        total += 2;
+        pthread_mutex_unlock(&b); pthread_mutex_unlock(&a);
+    }
+    return NULL;
+}
+
+int main(void) {
+    pthread_t x, y;
+    pthread_create(&x, NULL, t1, NULL);
+    pthread_create(&y, NULL, t2, NULL);
+    pthread_join(x, NULL);
+    pthread_join(y, NULL);
+    printf("%d\n", total);
+    return 0;
+}
+END
+A) 3000
+B) The program deadlocks
+C) A value below 3000
+D) 2000
+ANSWER: A
+HINT: Deadlock needs a circular wait. Do the two threads ever lock a and b in opposite orders?
+EXPLAIN: Both threads lock a then b, so no cycle can form. If t2 locked b first, the program could deadlock.
+
+# =====================================================================
+@subtopic Memory Management
+
+[EASY]
+Q: What is the main purpose of virtual memory?
+A) Increase CPU speed
+B) Let programs use more memory than physically installed by using disk as backing store
+C) Encrypt memory
+D) Reduce disk usage
+ANSWER: B
+
+[EASY]
+Q: Paging divides physical memory into fixed-size blocks called:
+A) Pages
+B) Frames
+C) Segments
+D) Sectors
+ANSWER: B
+EXPLAIN: Logical memory is divided into pages of the same size as the frames.
+
+[EASY]
+Q: A page fault occurs when:
+A) A program accesses a page that is not currently in main memory
+B) The CPU overheats
+C) A page is printed
+D) A file is deleted
+ANSWER: A
+
+[EASY]
+Q: Excessive paging that leaves the CPU mostly idle is called:
+A) Thrashing
+B) Swapping
+C) Caching
+D) Spooling
+ANSWER: A
+
+[EASY]
+Q: The TLB (Translation Lookaside Buffer) is a:
+A) Fast cache of recent page-table entries
+B) Type of hard disk
+C) Scheduling queue
+D) File system table
+ANSWER: A
+
+[MEDIUM]
+Q: With FIFO page replacement and 3 frames, how many page faults occur for the reference string 7 0 1 2 0 3 0 4?
+A) 7
+B) 6
+C) 8
+D) 5
+ANSWER: A
+HINT: Track the three frames; on a fault replace the page that has been in memory the longest.
+EXPLAIN: Faults on 7, 0, 1, 2 (replaces 7), 3 (replaces 0), 0 (replaces 1), 4 (replaces 2). The second 0 is a hit. Total 7.
+
+[MEDIUM]
+Q: A system uses 32-bit logical addresses and 4 KB pages. How many entries does a single-level page table have?
+A) 2^20 (about 1 million)
+B) 2^12
+C) 2^32
+D) 2^10
+ANSWER: A
+HINT: Offset bits = log2(4096). The remaining bits form the page number.
+EXPLAIN: 12 bits of offset leave 20 bits for the page number, so 2^20 entries.
+
+[MEDIUM]
+Q: What does this Python LRU simulation print?
+CODE python
+def lru_faults(refs, frames):
+    mem, faults = [], 0
+    for p in refs:
+        if p in mem:
+            mem.remove(p)
+        else:
+            faults += 1
+            if len(mem) == frames:
+                mem.pop(0)
+        mem.append(p)
+    return faults
+
+print(lru_faults([7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2], 3))
+END
+A) 9
+B) 10
+C) 8
+D) 7
+ANSWER: A
+HINT: The list keeps pages in order of last use; index 0 is the least recently used page.
+EXPLAIN: Faults on 7, 0, 1, 2, 3, 4, 2, 3, 0 = 9; the hits are 0, 0, 3 and 2.
+
+[HARD]
+Q: Effective memory access time: memory access 100 ns, TLB lookup 20 ns, TLB hit ratio 80%. With a single-level page table, what is the effective access time?
+A) 140 ns
+B) 120 ns
+C) 220 ns
+D) 100 ns
+ANSWER: A
+HINT: A hit costs TLB + one memory access; a miss costs TLB + page-table access + memory access.
+EXPLAIN: 0.8 x (20 + 100) + 0.2 x (20 + 100 + 100) = 96 + 44 = 140 ns.
+
+[HARD]
+Q: Belady's anomaly means:
+A) With FIFO replacement, increasing the number of frames can INCREASE the number of page faults
+B) LRU always gives more faults than FIFO
+C) Optimal replacement can be implemented in practice
+D) More frames always reduce faults for every algorithm
+ANSWER: A
+HINT: The classic example is the reference string 1 2 3 4 1 2 5 1 2 3 4 5 with 3 and 4 frames.
+EXPLAIN: FIFO gives 9 faults with 3 frames but 10 with 4. Stack algorithms such as LRU and Optimal never show this anomaly.
+
+# =====================================================================
+@subtopic File Systems & Disk Scheduling
+
+[EASY]
+Q: In Unix-like file systems, the metadata of a file (size, owner, permissions, block pointers) is stored in an:
+A) Inode
+B) Directory only
+C) Boot block
+D) Page table
+ANSWER: A
+
+[EASY]
+Q: Which disk scheduling algorithm serves the request closest to the current head position next?
+A) FCFS
+B) SSTF (Shortest Seek Time First)
+C) SCAN
+D) LOOK
+ANSWER: B
+
+[EASY]
+Q: Which allocation method stores each file in consecutive disk blocks?
+A) Contiguous allocation
+B) Linked allocation
+C) Indexed allocation
+D) Random allocation
+ANSWER: A
+
+[EASY]
+Q: The SCAN disk scheduling algorithm is also known as the:
+A) Elevator algorithm
+B) Round robin algorithm
+C) Banker's algorithm
+D) Clock algorithm
+ANSWER: A
+
+[EASY]
+Q: Which RAID level uses mirroring (an exact copy on a second disk)?
+A) RAID 0
+B) RAID 1
+C) RAID 5
+D) RAID 6
+ANSWER: B
+
+[MEDIUM]
+Q: The disk head is at cylinder 50. Requests: 82, 170, 43, 140, 24, 16, 190. What is the total head movement using FCFS?
+A) 642
+B) 208
+C) 332
+D) 500
+ANSWER: A
+HINT: Add the absolute differences in the given order, starting from 50.
+EXPLAIN: 32 + 88 + 127 + 97 + 116 + 8 + 174 = 642.
+
+[MEDIUM]
+Q: Same requests (head at 50): 82, 170, 43, 140, 24, 16, 190. What is the total head movement using SSTF?
+A) 208
+B) 642
+C) 332
+D) 226
+ANSWER: A
+HINT: From 50 the nearest request is 43. Keep choosing the nearest remaining request.
+EXPLAIN: 50->43->24->16 (34), then 16->82->140->170->190 (174): total 208.
+
+[MEDIUM]
+Q: What does this Python code print (total head movement for LOOK, moving towards larger cylinders first)?
+CODE python
+head, reqs = 50, [82, 170, 43, 140, 24, 16, 190]
+up = sorted(r for r in reqs if r >= head)
+down = sorted((r for r in reqs if r < head), reverse=True)
+total, pos = 0, head
+for r in up + down:
+    total += abs(r - pos)
+    pos = r
+print(total)
+END
+A) 314
+B) 208
+C) 332
+D) 642
+ANSWER: A
+HINT: LOOK goes up to the last request (190), then reverses to the lowest request (16).
+EXPLAIN: 50 -> 190 is 140, then 190 -> 16 is 174: total 314. SCAN would travel to the disk end (199) first.
+
+[HARD]
+Q: A Unix inode has 12 direct pointers, one single-indirect and one double-indirect pointer. Blocks are 4 KB and each pointer is 4 bytes. What is the largest file size possible (ignoring triple indirect)?
+A) About 4 GB (48 KB + 4 MB + 4 GB)
+B) 48 KB
+C) About 4 MB
+D) About 16 GB
+ANSWER: A
+HINT: One 4 KB block holds 4096 / 4 = 1024 pointers.
+EXPLAIN: Direct: 12 x 4 KB = 48 KB; single: 1024 x 4 KB = 4 MB; double: 1024 x 1024 x 4 KB = 4 GB.
+
+[HARD]
+Q: RAID 5 with 5 disks of 2 TB each provides how much usable capacity, and how many disk failures can it survive?
+A) 8 TB; one disk failure
+B) 10 TB; no failures
+C) 5 TB; two failures
+D) 8 TB; two failures
+ANSWER: A
+HINT: RAID 5 spreads parity equal to one disk's capacity across all disks.
+EXPLAIN: (n - 1) x 2 TB = 8 TB usable. Single distributed parity lets it rebuild from one failed disk; RAID 6 tolerates two.

@@ -1,0 +1,818 @@
+# Python Programming question bank
+@subject Python Programming | PY | #0D9488 | Syntax, data types, collections, functions, OOP and advanced features
+
+# =====================================================================
+@subtopic Python Basics
+
+[EASY]
+Q: Which of these is the correct way to start a comment in Python?
+A) //
+B) #
+C) /*
+D) --
+ANSWER: B
+
+[EASY]
+Q: What does type(3.0) return?
+A) <class 'int'>
+B) <class 'float'>
+C) <class 'double'>
+D) <class 'number'>
+ANSWER: B
+
+[EASY]
+Q: Python uses which of these to define a block of code (e.g. the body of an if)?
+A) Curly braces { }
+B) Indentation
+C) begin / end keywords
+D) Semicolons
+ANSWER: B
+
+[EASY]
+Q: Which operator performs floor (integer) division in Python 3?
+A) /
+B) //
+C) %
+D) div
+ANSWER: B
+EXPLAIN: 7 // 2 is 3, while 7 / 2 is 3.5.
+
+[EASY]
+Q: Which function reads a line of text typed by the user?
+A) scanf()
+B) input()
+C) read()
+D) gets()
+ANSWER: B
+EXPLAIN: input() always returns a str; convert with int() or float() if you need a number.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+print(7 // 2, -7 // 2, 7 % -3, 2 ** 3 ** 2)
+END
+A) 3 -4 -2 512
+B) 3 -3 1 64
+C) 3 -4 1 512
+D) 3 -3 -2 64
+ANSWER: A
+HINT: // rounds towards minus infinity; % takes the sign of the divisor; ** is right-associative.
+EXPLAIN: -7 // 2 = -4 (floor of -3.5); 7 % -3 = -2 because 7 = (-3)(-3) + (-2); 2 ** (3 ** 2) = 2 ** 9 = 512.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+x = 10
+y = x
+x += 5
+a = [1, 2]
+b = a
+a += [3]
+print(x, y, b)
+END
+A) 15 10 [1, 2, 3]
+B) 15 15 [1, 2, 3]
+C) 15 10 [1, 2]
+D) 10 10 [1, 2, 3]
+ANSWER: A
+HINT: Integers are immutable; lists are mutable and += on a list modifies it in place.
+EXPLAIN: x += 5 rebinds x to a new int, y keeps 10. a += [3] extends the same list object that b also refers to.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+print(bool(""), bool("0"), bool([]), bool(0.0), bool(None))
+END
+A) False True False False False
+B) False False False False False
+C) True True False False False
+D) False True True False False
+ANSWER: A
+HINT: Empty containers, zero values and None are falsy. Is "0" an empty string?
+EXPLAIN: "0" is a non-empty string, so it is truthy; everything else listed is falsy.
+
+[HARD]
+Q: What does this code print?
+CODE python
+a = 256
+b = 256
+c = [1, 2, 3]
+d = [1, 2, 3]
+print(a is b, c == d, c is d)
+END
+A) True True False
+B) True True True
+C) False True False
+D) True False False
+ANSWER: A
+HINT: == compares values, is compares object identity. CPython caches small integers.
+EXPLAIN: Small ints (-5..256) are cached so a is b. The two lists have equal values but are different objects.
+
+[HARD]
+Q: What does this code print?
+CODE python
+print(0.1 + 0.2 == 0.3, round(2.5), round(3.5), int(-2.7))
+END
+A) False 2 4 -2
+B) True 3 4 -3
+C) False 3 4 -2
+D) False 2 4 -3
+ANSWER: A
+HINT: Floats are binary approximations; round() uses banker's rounding; int() truncates toward zero.
+EXPLAIN: 0.1 + 0.2 is 0.30000000000000004. round() rounds .5 to the nearest even number (2 and 4). int(-2.7) truncates to -2.
+
+# =====================================================================
+@subtopic Strings & Lists
+
+[EASY]
+Q: Strings in Python are:
+A) Mutable
+B) Immutable
+C) Mutable only if declared with var
+D) Arrays of integers
+ANSWER: B
+
+[EASY]
+Q: Which method adds an element to the end of a list?
+A) add()
+B) append()
+C) push()
+D) insert_end()
+ANSWER: B
+
+[EASY]
+Q: What is the result of len("hello")?
+A) 4
+B) 5
+C) 6
+D) Error
+ANSWER: B
+
+[EASY]
+Q: What does "Py" * 3 evaluate to?
+A) "PyPyPy"
+B) "Py3"
+C) Error
+D) ["Py", "Py", "Py"]
+ANSWER: A
+
+[EASY]
+Q: What is the index of the last element of a list named lst using negative indexing?
+A) lst[0]
+B) lst[-1]
+C) lst[len]
+D) lst[last]
+ANSWER: B
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+nums = [5, 3, 8, 1]
+s = sorted(nums)
+nums.sort(reverse=True)
+print(s, nums)
+END
+A) [1, 3, 5, 8] [8, 5, 3, 1]
+B) [8, 5, 3, 1] [8, 5, 3, 1]
+C) [1, 3, 5, 8] [1, 3, 5, 8]
+D) None [8, 5, 3, 1]
+ANSWER: A
+HINT: sorted() returns a new list; list.sort() sorts in place.
+EXPLAIN: s holds a new ascending list; nums itself is then sorted descending.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+word = "programming"
+print(word[::-1][:4], word.count("m"), word.find("g"), word.upper()[3])
+END
+A) gnim 2 3 G
+B) gnim 2 3 g
+C) gnimm 2 10 G
+D) prog 2 3 G
+ANSWER: A
+HINT: [::-1] reverses the string; find() returns the FIRST index.
+EXPLAIN: Reversed "gnimmargorp" starts with "gnim"; there are two m's; the first g is at index 3; upper()[3] is 'G'.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+squares = [x * x for x in range(1, 8) if x % 2 == 1]
+print(squares, sum(squares))
+END
+A) [1, 9, 25, 49] 84
+B) [1, 4, 9, 16, 25, 36, 49] 140
+C) [4, 16, 36] 56
+D) [1, 9, 25] 35
+ANSWER: A
+HINT: range(1, 8) is 1..7. Keep only the odd numbers before squaring.
+EXPLAIN: Odd numbers 1, 3, 5, 7 give squares 1, 9, 25, 49 which sum to 84.
+
+[HARD]
+Q: What does this code print?
+CODE python
+grid = [[0] * 3] * 3
+grid[0][0] = 1
+safe = [[0] * 3 for _ in range(3)]
+safe[0][0] = 1
+print(grid[2][0], safe[2][0])
+END
+A) 1 0
+B) 0 0
+C) 1 1
+D) 0 1
+ANSWER: A
+HINT: Multiplying a list of lists copies references, not the inner lists.
+EXPLAIN: All three rows of grid are the SAME list object, so changing one changes all. The comprehension creates three separate rows.
+
+[HARD]
+Q: What does this code print?
+CODE python
+a = [1, 2, 3, 4, 5]
+b = a[:]
+c = a
+a[1:3] = [9]
+print(len(a), b[1], c[1], a[-2:])
+END
+A) 4 2 9 [4, 5]
+B) 5 2 9 [4, 5]
+C) 4 9 9 [4, 5]
+D) 4 2 2 [9, 4]
+ANSWER: A
+HINT: Slice assignment can replace a slice with a list of a different length. a[:] makes a copy.
+EXPLAIN: a becomes [1, 9, 4, 5] (length 4). b is an earlier copy, so b[1] is 2. c is the same object as a.
+
+# =====================================================================
+@subtopic Tuples, Sets & Dictionaries
+
+[EASY]
+Q: Which of these collections is immutable?
+A) list
+B) tuple
+C) set
+D) dict
+ANSWER: B
+
+[EASY]
+Q: Which collection automatically removes duplicate values?
+A) list
+B) tuple
+C) set
+D) str
+ANSWER: C
+
+[EASY]
+Q: How do you create an empty dictionary?
+A) {}
+B) []
+C) ()
+D) set()
+ANSWER: A
+EXPLAIN: {} is an empty dict; an empty set must be written set().
+
+[EASY]
+Q: Which method returns the value for a key, or a default value if the key is missing?
+A) d.find(key)
+B) d.get(key, default)
+C) d.value(key)
+D) d.fetch(key)
+ANSWER: B
+
+[EASY]
+Q: Which of these can be used as a dictionary key?
+A) A list
+B) A tuple of numbers
+C) A set
+D) A dictionary
+ANSWER: B
+EXPLAIN: Keys must be hashable (immutable); lists, sets and dicts are not.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+a = {1, 2, 3, 4}
+b = {3, 4, 5}
+print(sorted(a & b), sorted(a - b), len(a | b))
+END
+A) [3, 4] [1, 2] 5
+B) [3, 4] [1, 2, 5] 7
+C) [1, 2, 3, 4, 5] [1, 2] 5
+D) [3, 4] [5] 5
+ANSWER: A
+HINT: & is intersection, - is difference, | is union.
+EXPLAIN: Common elements 3, 4; elements only in a are 1, 2; the union has 5 elements.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+marks = {"ravi": 82, "anu": 91, "kiran": 76}
+marks["ravi"] = 88
+marks.setdefault("anu", 50)
+marks.setdefault("meena", 70)
+best = max(marks, key=marks.get)
+print(len(marks), marks["anu"], best)
+END
+A) 4 91 anu
+B) 4 50 anu
+C) 3 91 ravi
+D) 4 91 meena
+ANSWER: A
+HINT: setdefault only inserts when the key is missing. max with key=marks.get compares values.
+EXPLAIN: anu keeps 91, meena is added (4 keys), and the highest mark belongs to anu.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+t = (1, 2, [3, 4])
+t[2].append(5)
+x, *rest = t
+print(t, x, rest)
+END
+A) (1, 2, [3, 4, 5]) 1 [2, [3, 4, 5]]
+B) TypeError
+C) (1, 2, [3, 4]) 1 [2, [3, 4]]
+D) (1, 2, [3, 4, 5]) 1 (2, [3, 4, 5])
+ANSWER: A
+HINT: A tuple cannot be reassigned, but a mutable object INSIDE it can change. Starred unpacking always gives a list.
+EXPLAIN: The list inside the tuple is modified in place; *rest collects the remaining items into a list.
+
+[HARD]
+Q: What does this code print?
+CODE python
+d = {}
+for i, w in enumerate(["to", "be", "or", "not", "to", "be"]):
+    d.setdefault(w, []).append(i)
+print(d["to"], d["be"], list(d)[2])
+END
+A) [0, 4] [1, 5] or
+B) [0] [1] or
+C) [4] [5] not
+D) [0, 4] [1, 5] not
+ANSWER: A
+HINT: setdefault returns the existing list when the key is already present. Dicts keep insertion order.
+EXPLAIN: The word positions are collected per word; the keys in order are to, be, or, not, so index 2 is "or".
+
+[HARD]
+Q: What does this code print?
+CODE python
+d = {1: "a", True: "b", 1.0: "c"}
+print(len(d), d[1])
+END
+A) 1 c
+B) 3 a
+C) 1 a
+D) 2 c
+ANSWER: A
+HINT: 1, True and 1.0 are equal and have the same hash.
+EXPLAIN: All three keys compare equal, so they are the same dict key: the first key (1) is kept and its value is overwritten twice, ending as "c".
+
+# =====================================================================
+@subtopic Functions & Scope
+
+[EASY]
+Q: Which keyword is used to define a function in Python?
+A) function
+B) def
+C) func
+D) lambda only
+ANSWER: B
+
+[EASY]
+Q: What does a Python function return if it has no return statement?
+A) 0
+B) None
+C) An empty string
+D) It raises an error
+ANSWER: B
+
+[EASY]
+Q: Which keyword creates a small anonymous function?
+A) def
+B) lambda
+C) anon
+D) fn
+ANSWER: B
+
+[EASY]
+Q: In def f(*args), args is received as a:
+A) list
+B) tuple
+C) dict
+D) set
+ANSWER: B
+EXPLAIN: **kwargs would be received as a dict.
+
+[EASY]
+Q: Which keyword lets a function modify a variable defined at module (global) level?
+A) static
+B) global
+C) extern
+D) public
+ANSWER: B
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+def add(item, bucket=[]):
+    bucket.append(item)
+    return bucket
+
+add(1)
+add(2)
+print(add(3))
+END
+A) [1, 2, 3]
+B) [3]
+C) [1]
+D) TypeError
+ANSWER: A
+HINT: Default argument values are evaluated only once, when the function is defined.
+EXPLAIN: The same default list is reused by every call, so it accumulates. Use bucket=None and create a new list inside.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+x = 5
+def outer():
+    x = 10
+    def inner():
+        nonlocal x
+        x += 1
+        return x
+    return inner() + x
+print(outer(), x)
+END
+A) 22 5
+B) 21 5
+C) 22 11
+D) 11 5
+ANSWER: A
+HINT: nonlocal refers to the variable of the enclosing function, not the global one.
+EXPLAIN: inner() makes outer's x 11 and returns 11; then 11 + x (now 11) = 22. The global x stays 5.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+def f(a, b=2, *args, **kw):
+    return a + b + len(args) + len(kw)
+
+print(f(1), f(1, 5, 7, 8), f(1, c=3, d=4))
+END
+A) 3 10 5
+B) 3 8 5
+C) 3 10 3
+D) 1 10 5
+ANSWER: B
+HINT: Extra positional arguments go into args, extra keyword arguments go into kw. Count them, don't add them.
+EXPLAIN: f(1) = 1 + 2 = 3; f(1, 5, 7, 8) = 1 + 5 + len((7, 8)) = 8; f(1, c=3, d=4) = 1 + 2 + len({'c': 3, 'd': 4}) = 5.
+
+[HARD]
+Q: What does this code print?
+CODE python
+funcs = [lambda: i for i in range(3)]
+fixed = [lambda i=i: i for i in range(3)]
+print([f() for f in funcs], [f() for f in fixed])
+END
+A) [2, 2, 2] [0, 1, 2]
+B) [0, 1, 2] [0, 1, 2]
+C) [2, 2, 2] [2, 2, 2]
+D) [0, 1, 2] [2, 2, 2]
+ANSWER: A
+HINT: A closure looks up the variable when it is CALLED, not when it is created. Default values are evaluated at creation.
+EXPLAIN: All three lambdas share the same i, which is 2 at the end (late binding). Using i=i captures the current value as a default.
+
+[HARD]
+Q: What does this code print?
+CODE python
+def counter():
+    count = 0
+    def step():
+        nonlocal count
+        count += 1
+        return count
+    return step
+
+a = counter()
+b = counter()
+a(); a()
+print(a(), b())
+END
+A) 3 1
+B) 1 1
+C) 3 4
+D) 2 1
+ANSWER: A
+HINT: Each call to counter() creates a new, independent count variable kept alive by the closure.
+EXPLAIN: a has been called twice before, so a() returns 3; b has its own count starting at 0, so b() returns 1.
+
+# =====================================================================
+@subtopic OOP in Python
+
+[EASY]
+Q: Which method is called automatically when a new object of a class is created?
+A) __new_object__
+B) __init__
+C) __create__
+D) constructor
+ANSWER: B
+
+[EASY]
+Q: What is the conventional name of the first parameter of an instance method?
+A) this
+B) self
+C) me
+D) obj
+ANSWER: B
+
+[EASY]
+Q: How do you make class Dog inherit from class Animal?
+A) class Dog extends Animal:
+B) class Dog(Animal):
+C) class Dog : Animal
+D) class Dog inherits Animal:
+ANSWER: B
+
+[EASY]
+Q: Which special method controls what print(obj) shows?
+A) __print__
+B) __str__
+C) __show__
+D) __text__
+ANSWER: B
+
+[EASY]
+Q: An attribute whose name starts with two underscores, such as self.__salary, is:
+A) Deleted automatically
+B) Name-mangled to make it harder to access from outside the class
+C) A constant
+D) A static variable
+ANSWER: B
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+class A:
+    def hello(self):
+        return "A"
+
+class B(A):
+    def hello(self):
+        return "B" + super().hello()
+
+class C(B):
+    pass
+
+print(C().hello())
+END
+A) BA
+B) A
+C) B
+D) AB
+ANSWER: A
+HINT: C has no hello(), so Python looks it up in B; super() inside B refers to A.
+EXPLAIN: B.hello returns "B" + A.hello() = "BA".
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+class Student:
+    school = "XYZ"
+    def __init__(self, name):
+        self.name = name
+
+s1 = Student("Asha")
+s2 = Student("Ravi")
+s1.school = "ABC"
+Student.school = "PQR"
+print(s1.school, s2.school)
+END
+A) ABC PQR
+B) PQR PQR
+C) ABC XYZ
+D) XYZ PQR
+ANSWER: A
+HINT: Assigning through an instance creates an instance attribute that hides the class attribute.
+EXPLAIN: s1 now has its own school "ABC"; s2 still reads the class attribute, which was changed to "PQR".
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+class Vec:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def __add__(self, o):
+        return Vec(self.x + o.x, self.y + o.y)
+    def __repr__(self):
+        return f"Vec({self.x}, {self.y})"
+
+print(Vec(1, 2) + Vec(3, 4))
+END
+A) Vec(4, 6)
+B) Vec(1, 2)Vec(3, 4)
+C) TypeError
+D) <__main__.Vec object>
+ANSWER: A
+HINT: + on objects calls the __add__ method of the left operand.
+EXPLAIN: Operator overloading: __add__ returns a new Vec, and print uses __repr__ because no __str__ is defined.
+
+[HARD]
+Q: What does this code print?
+CODE python
+class A:
+    def who(self): return "A"
+class B(A):
+    def who(self): return "B" + super().who()
+class C(A):
+    def who(self): return "C" + super().who()
+class D(B, C):
+    def who(self): return "D" + super().who()
+
+print(D().who(), [k.__name__ for k in D.__mro__][:4])
+END
+A) DBCA ['D', 'B', 'C', 'A']
+B) DBA ['D', 'B', 'A', 'C']
+C) DCBA ['D', 'C', 'B', 'A']
+D) DBACA ['D', 'B', 'A', 'C']
+ANSWER: A
+HINT: super() follows the Method Resolution Order (C3 linearisation), not just the direct parent.
+EXPLAIN: The MRO of D is D, B, C, A, object. Each super().who() moves to the next class in that order.
+
+[HARD]
+Q: What does this code print?
+CODE python
+class Temp:
+    def __init__(self):
+        self._c = 0
+    @property
+    def c(self):
+        return self._c
+    @c.setter
+    def c(self, v):
+        if v < -273:
+            raise ValueError("too cold")
+        self._c = v
+
+t = Temp()
+t.c = 25
+try:
+    t.c = -300
+except ValueError as e:
+    print(t.c, e)
+END
+A) 25 too cold
+B) -300 too cold
+C) 0 too cold
+D) 25 ValueError
+ANSWER: A
+HINT: The setter raises before assigning the invalid value.
+EXPLAIN: The property setter validates input; -300 is rejected so _c stays 25, and the message is printed.
+
+# =====================================================================
+@subtopic Advanced Python
+
+[EASY]
+Q: Which keyword turns a function into a generator?
+A) return
+B) yield
+C) generate
+D) async
+ANSWER: B
+
+[EASY]
+Q: Which block handles an exception in Python?
+A) try ... catch
+B) try ... except
+C) do ... handle
+D) check ... fail
+ANSWER: B
+
+[EASY]
+Q: Which statement opens a file and closes it automatically afterwards?
+A) open ... close
+B) with open(...) as f:
+C) using open(...)
+D) file(...)
+ANSWER: B
+
+[EASY]
+Q: Which built-in pairs elements from two lists position by position?
+A) map()
+B) zip()
+C) pair()
+D) join()
+ANSWER: B
+
+[EASY]
+Q: Which module is used to work with regular expressions?
+A) regex
+B) re
+C) string
+D) pattern
+ANSWER: B
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+def gen():
+    for i in range(3):
+        yield i * 10
+
+g = gen()
+print(next(g), next(g), list(g), list(g))
+END
+A) 0 10 [20] []
+B) 0 10 [0, 10, 20] [0, 10, 20]
+C) 0 0 [10, 20] []
+D) 0 10 [20] [20]
+ANSWER: A
+HINT: A generator remembers where it stopped and can be consumed only once.
+EXPLAIN: The two next() calls take 0 and 10, list(g) collects the remaining 20, and the exhausted generator then gives [].
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+def safe_div(a, b):
+    try:
+        r = a // b
+    except ZeroDivisionError:
+        return "div0"
+    else:
+        return r
+    finally:
+        print("done", end=" ")
+
+print(safe_div(9, 2), safe_div(1, 0))
+END
+A) done done 4 div0
+B) 4 done div0 done
+C) done 4 done div0
+D) 4 div0 done done
+ANSWER: A
+HINT: Both calls finish (and print "done") before print() of the results runs.
+EXPLAIN: finally runs in each call, printing "done " twice; then the outer print shows 4 and div0.
+
+[MEDIUM]
+Q: What does this code print?
+CODE python
+from functools import reduce
+nums = [1, 2, 3, 4, 5]
+evens = list(filter(lambda n: n % 2 == 0, nums))
+doubled = list(map(lambda n: n * 2, nums))
+total = reduce(lambda a, b: a + b, nums)
+print(evens, doubled[-1], total)
+END
+A) [2, 4] 10 15
+B) [1, 3, 5] 10 15
+C) [2, 4] 5 15
+D) [2, 4] 10 120
+ANSWER: A
+HINT: filter keeps items where the function is True; reduce combines items pairwise from the left.
+EXPLAIN: Evens are [2, 4]; the last doubled value is 10; the sum is 15.
+
+[HARD]
+Q: What does this code print?
+CODE python
+def log(fn):
+    def wrapper(*a):
+        print("call", fn.__name__, end=" ")
+        return fn(*a) * 2
+    return wrapper
+
+@log
+def square(x):
+    return x * x
+
+print(square(3), square.__name__)
+END
+A) call square 18 wrapper
+B) call square 9 square
+C) 18 square
+D) call wrapper 18 wrapper
+ANSWER: A
+HINT: @log replaces square with whatever log returns. functools.wraps was not used.
+EXPLAIN: The wrapper prints, then returns 9 * 2 = 18. Without functools.wraps the decorated function's name is "wrapper".
+
+[HARD]
+Q: What does this code print?
+CODE python
+class Countdown:
+    def __init__(self, n):
+        self.n = n
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self.n <= 0:
+            raise StopIteration
+        self.n -= 1
+        return self.n + 1
+
+c = Countdown(3)
+print(list(c), list(c), sum(Countdown(4)))
+END
+A) [3, 2, 1] [] 10
+B) [3, 2, 1] [3, 2, 1] 10
+C) [2, 1, 0] [] 6
+D) [3, 2, 1] [] 6
+ANSWER: A
+HINT: __iter__ returns the same object, so its state is shared between loops.
+EXPLAIN: The iterator is exhausted after the first list(); a fresh Countdown(4) yields 4+3+2+1 = 10.

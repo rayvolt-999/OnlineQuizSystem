@@ -1,0 +1,11 @@
+# Keep script line endings correct on every OS
+*.sh   text eol=lf
+*.bat  text eol=crlf
+*.java text eol=lf
+*.qb   text eol=lf
+*.jar  binary
+*.png  binary
+*.jpg  binary
+*.mp4  binary
+*.docx binary
+*.pptx binary

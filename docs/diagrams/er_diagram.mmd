@@ -1,0 +1,48 @@
+erDiagram
+USERS ||--o{ RESULTS : takes
+SUBJECTS ||--o{ SUBTOPICS : contains
+SUBTOPICS ||--o{ QUESTIONS : contains
+SUBJECTS |o--o{ RESULTS : "for"
+RESULTS ||--|{ RESULT_ANSWERS : records
+USERS { int id PK
+ text username UK
+ text full_name
+ text password_hash
+ text salt
+ text role }
+SUBJECTS { int id PK
+ text name UK
+ text short_code
+ text color
+ int sort_order }
+SUBTOPICS { int id PK
+ int subject_id FK
+ text name
+ int sort_order }
+QUESTIONS { int id PK
+ int subtopic_id FK
+ text difficulty
+ text question_text
+ text code
+ text option_a_to_d
+ int correct_index
+ text hint
+ text explanation }
+RESULTS { int id PK
+ int user_id FK
+ int subject_id FK
+ int subtopic_id FK
+ text difficulty
+ int correct
+ int wrong
+ int unanswered
+ int hints_used
+ real score
+ int time_taken_sec }
+RESULT_ANSWERS { int id PK
+ int result_id FK
+ text subtopic_name
+ text question_snapshot
+ int correct_index
+ int selected_index
+ int hint_used }
