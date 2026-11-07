@@ -178,7 +178,8 @@ public class JdbcResultDAO implements ResultDAO {
         String sql = "SELECT r.subject_name, a.subtopic_name, COUNT(*) AS attempted,"
                 + " SUM(CASE WHEN a.selected_index = a.correct_index THEN 1 ELSE 0 END) AS correct"
                 + " FROM result_answers a JOIN results r ON r.id = a.result_id"
-                + " WHERE a.subtopic_name IS NOT NULL" + (userId > 0 ? " AND r.user_id = ?" : "")
+                // skipped questions are not evidence of a weak topic (and accuracy = correct / attempted elsewhere too)
+                + " WHERE a.subtopic_name IS NOT NULL AND a.selected_index >= 0" + (userId > 0 ? " AND r.user_id = ?" : "")
                 + " GROUP BY r.subject_name, a.subtopic_name";
         List<TopicStat> list = new ArrayList<>();
         try (Connection c = db.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {

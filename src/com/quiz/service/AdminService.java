@@ -204,15 +204,17 @@ public class AdminService {
     /** Writes results as CSV (opens in Excel / LibreOffice). */
     public static void exportResults(Path file, List<QuizResult> results) throws DataAccessException {
         try (BufferedWriter w = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+            w.write('\uFEFF');   // byte-order mark so Excel opens the UTF-8 file with the right characters
             w.write(CsvUtil.toLine("id", "student", "subject", "subtopic", "mode", "date", "questions", "correct",
                     "wrong", "unanswered", "hints_used", "score", "max_score", "percentage", "grade", "time_taken",
                     "auto_submitted"));
             w.newLine();
             for (QuizResult r : results) {
-                w.write(CsvUtil.toLine(r.getId(), r.getUserName(), r.getSubjectName(), r.getSubtopicName(),
+                w.write(CsvUtil.toLine(r.getId(), CsvUtil.safeText(r.getUserName()), CsvUtil.safeText(r.getSubjectName()),
+                        CsvUtil.safeText(r.getSubtopicName()),
                         r.getDifficulty().getLabel(), r.getTakenAt().format(QuizResult.DISPLAY_FMT),
                         r.getTotalQuestions(), r.getCorrect(), r.getWrong(), r.getUnanswered(), r.getHintsUsed(),
-                        fmt(r.getScore()), fmt(r.getMaxScore()), String.format("%.1f", r.getPercentage()), r.getGrade(),
+                        fmt(r.getScore()), fmt(r.getMaxScore()), String.format(java.util.Locale.ROOT, "%.1f", r.getPercentage()), r.getGrade(),
                         QuizResult.formatDuration(r.getTimeTakenSeconds()), r.isAutoSubmitted() ? "yes" : "no"));
                 w.newLine();
             }
@@ -222,7 +224,8 @@ public class AdminService {
     }
 
     public static String fmt(double d) {
-        return d == Math.rint(d) ? String.valueOf((long) d) : String.format("%.2f", d);
+        // Locale.ROOT: always a dot as decimal separator (e.g. 7.50), whatever the computer's language
+        return d == Math.rint(d) ? String.valueOf((long) d) : String.format(java.util.Locale.ROOT, "%.2f", d);
     }
 
     // ================================================================ users

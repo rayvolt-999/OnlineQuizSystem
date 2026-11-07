@@ -20,6 +20,14 @@ import java.awt.RenderingHints;
 public class CodeBlock extends JPanel {
 
     public CodeBlock(String code, String lang, int maxVisibleLines) {
+        this(code, lang, maxVisibleLines, true);
+    }
+
+    /**
+     * @param selectable false during a test: the code cannot be focused or copied, so clicking it never
+     *                   steals the keyboard shortcuts (arrow keys would otherwise move a hidden caret)
+     */
+    public CodeBlock(String code, String lang, int maxVisibleLines, boolean selectable) {
         super(new BorderLayout());
         setOpaque(false);
         setBorder(BorderFactory.createEmptyBorder(8, 0, 10, 0));
@@ -30,6 +38,8 @@ public class CodeBlock extends JPanel {
 
         JTextArea area = new JTextArea(code.replace("\t", "    "));
         area.setEditable(false);
+        area.setFocusable(selectable);
+        if (!selectable) area.setHighlighter(null);
         area.setFont(Theme.CODE);
         area.setForeground(Theme.CODE_FG);
         area.setBackground(Theme.CODE_BG);

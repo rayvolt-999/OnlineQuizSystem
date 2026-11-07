@@ -126,7 +126,15 @@ public class LoginPanel extends JPanel {
         login.addActionListener(e -> doLogin());
         passField.getField().addActionListener(e -> doLogin());
         userField.getField().addActionListener(e -> passField.getField().requestFocusInWindow());
-        register.addActionListener(e -> new RegisterDialog(frame, ctx).setVisible(true));
+        register.addActionListener(e -> {
+            RegisterDialog d = new RegisterDialog(frame, ctx);
+            d.setVisible(true);
+            if (d.getCreatedUser() != null) {        // ready to sign in: username filled, cursor in the password box
+                userField.setText(d.getCreatedUser().getUsername());
+                passField.setText("");
+                passField.getField().requestFocusInWindow();
+            }
+        });
         return outer;
     }
 

@@ -43,12 +43,12 @@ public enum Difficulty {
 
     /** Questions drawn per test. */
     public int getQuestionCount() {
-        return (int) AppConfig.getDouble(key() + ".questions", defaultQuestions);
+        return Math.max(1, (int) AppConfig.getDouble(key() + ".questions", defaultQuestions));   // a test needs >= 1 question
     }
 
     /** Time limit in minutes. */
     public int getMinutes() {
-        return (int) AppConfig.getDouble(key() + ".minutes", defaultMinutes);
+        return Math.max(0, (int) AppConfig.getDouble(key() + ".minutes", defaultMinutes));      // 0 = no time limit
     }
 
     /** Marks for each correct answer. */

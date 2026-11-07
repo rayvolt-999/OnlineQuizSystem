@@ -82,6 +82,17 @@ public final class CsvUtil {
         return sb.toString();
     }
 
+    /**
+     * Neutralises spreadsheet formulas in free text (names, subjects): a cell starting with =, +, - or @
+     * would otherwise be run as a formula by Excel / LibreOffice ("CSV injection"). Numbers are left alone.
+     */
+    public static String safeText(String s) {
+        if (s == null || s.isEmpty()) return s;
+        char c = s.charAt(0);
+        boolean risky = c == '=' || c == '+' || c == '-' || c == '@' || c == '\t' || c == '\r';
+        return risky && !s.matches("[-+]?\\d+(\\.\\d+)?") ? "'" + s : s;
+    }
+
     public static String escape(String s) {
         if (s.contains(",") || s.contains("\"") || s.contains("\n") || s.contains("\r")) {
             return '"' + s.replace("\"", "\"\"") + '"';

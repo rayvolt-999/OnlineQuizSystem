@@ -45,9 +45,9 @@ public class MainFrame extends JFrame {
     }
 
     private void show(String name, Component screen) {
-        for (Component c : root.getComponents()) {
-            if (name.equals(c.getName())) root.remove(c);
-        }
+        // Keep only the visible screen: old screens are dropped so they cannot hold keyboard focus,
+        // keep stale data, or pile up in memory.
+        root.removeAll();
         screen.setName(name);
         root.add(screen, name);
         cards.show(root, name);

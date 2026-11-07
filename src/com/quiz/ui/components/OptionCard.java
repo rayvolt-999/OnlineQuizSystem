@@ -26,6 +26,8 @@ public class OptionCard extends JPanel {
     private boolean selected;
     private boolean hover;
     private Runnable onClick;
+    private String value = "";
+    private int wrapWidth = 300;
 
     public OptionCard(char letter) {
         super(new BorderLayout(12, 0));
@@ -51,8 +53,18 @@ public class OptionCard extends JPanel {
 
     /** Option text is shown in monospace when it looks like program output / code. */
     public void setOption(String value, boolean monospace, int wrapWidth) {
-        text.setFont(monospace ? Theme.CODE : Theme.BODY);
+        this.value = value == null ? "" : value;
+        this.wrapWidth = wrapWidth;
+        text.setFont((monospace ? Theme.CODE : Theme.BODY).deriveFont(selected ? Font.BOLD : Font.PLAIN));
+        text.setText(UiUtil.wrap(this.value, wrapWidth));
+    }
+
+    /** Re-wraps the text for a new width (called when the window is resized). */
+    public void setWrapWidth(int wrapWidth) {
+        if (wrapWidth == this.wrapWidth) return;
+        this.wrapWidth = wrapWidth;
         text.setText(UiUtil.wrap(value, wrapWidth));
+        revalidate();
     }
 
     public void setSelected(boolean s) {

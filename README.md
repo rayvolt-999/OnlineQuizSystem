@@ -158,7 +158,7 @@ src/com/quiz/
   ui/                    screens: Login, Dashboard, Subject, Quiz, Result, Review, Analytics, History, Admin
   ui/components/         PillButton, RoundPanel, OptionCard, CodeBlock, PasswordInput (eye toggle), charts…
 resources/seed/          bundled question banks, one .qb file per subject (+ index.txt)
-test/com/quiz/           SelfTest.java: 95 automated checks, no external libraries
+test/com/quiz/           SelfTest.java: 99 automated checks, no external libraries
 lib/                     sqlite-jdbc driver (the only dependency)
 docs/                    report, presentation, diagrams, screenshots, demo video, sample .qb
 build.* / run.* / test.* build, run and test scripts for Linux/macOS (.sh) and Windows (.bat)
@@ -209,8 +209,8 @@ marks.wrong=0        # e.g. 0.25 for negative marking
 ./test.sh       # Linux / macOS
 test.bat        # Windows
 ```
-This runs 95 checks: scoring, hints, modes, database, import/export and the upgrade of old databases.
-It uses temporary databases, so your `data/quiz.db` is never touched. Expected output: `Passed: 95   Failed: 0`.
+This runs 99 checks: scoring, hints, modes, database, import/export and the upgrade of old databases.
+It uses temporary databases, so your `data/quiz.db` is never touched. Expected output: `Passed: 99   Failed: 0`.
 
 ## Troubleshooting
 

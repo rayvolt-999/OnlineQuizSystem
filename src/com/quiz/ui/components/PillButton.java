@@ -24,6 +24,7 @@ public class PillButton extends JButton {
     private final Style style;
     private Color base;
     private boolean hover;
+    private boolean mouseFocus;   // focus came from a click: no ring (ring only for keyboard / Tab focus)
 
     public PillButton(String text, Style style) {
         super(text);
@@ -46,6 +47,11 @@ public class PillButton extends JButton {
         addMouseListener(new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent e) { hover = true; repaint(); }
             @Override public void mouseExited(MouseEvent e) { hover = false; repaint(); }
+            @Override public void mousePressed(MouseEvent e) { mouseFocus = true; }
+        });
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override public void focusGained(java.awt.event.FocusEvent e) { repaint(); }
+            @Override public void focusLost(java.awt.event.FocusEvent e) { mouseFocus = false; repaint(); }
         });
     }
 
@@ -97,6 +103,12 @@ public class PillButton extends JButton {
                 g.setPaint(new GradientPaint(0, 0, c, w, h, c2));
                 g.fillRoundRect(0, 0, w - 1, h - 1, arc, arc);
             }
+        }
+
+        if (isFocusOwner() && enabled && !mouseFocus) {           // keyboard users can see which button Space/Enter will press
+            g.setColor(style == Style.GHOST ? new Color(255, 255, 255, 200) : Theme.alpha(Theme.INDIGO, 140));
+            g.setStroke(new BasicStroke(2f));
+            g.drawRoundRect(1, 1, w - 3, h - 3, arc, arc);
         }
 
         Font f = getFont();

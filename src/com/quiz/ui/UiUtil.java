@@ -131,6 +131,26 @@ public final class UiUtil {
         return c;
     }
 
+    /**
+     * A left-aligned horizontal row with a fixed gap between items and no leading gap
+     * (unlike FlowLayout, which indents the first item). Null items are skipped.
+     */
+    public static JPanel row(int gap, JComponent... items) {
+        JPanel p = new JPanel();
+        p.setOpaque(false);
+        p.setLayout(new javax.swing.BoxLayout(p, javax.swing.BoxLayout.X_AXIS));
+        boolean first = true;
+        for (JComponent c : items) {
+            if (c == null) continue;
+            if (!first) p.add(javax.swing.Box.createHorizontalStrut(gap));
+            c.setAlignmentY(Component.CENTER_ALIGNMENT);
+            p.add(c);
+            first = false;
+        }
+        p.add(javax.swing.Box.createHorizontalGlue());
+        return p;
+    }
+
     /** Re-validates once more after the first layout, so word-wrapped text gets its final height. */
     public static void relayoutLater(JComponent c) {
         javax.swing.SwingUtilities.invokeLater(() -> {

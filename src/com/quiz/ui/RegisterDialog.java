@@ -23,6 +23,7 @@ public class RegisterDialog extends JDialog {
     private final TextInput userField = new TextInput(22);
     private final PasswordInput passField = new PasswordInput();
     private final PasswordInput confirmField = new PasswordInput();
+    private User created;
 
     public RegisterDialog(JFrame owner, AppContext ctx) {
         super(owner, "Create a student account", true);
@@ -62,11 +63,17 @@ public class RegisterDialog extends JDialog {
                     new String(passField.getPassword()), new String(confirmField.getPassword()));
             UiUtil.info(this, "Account created for " + u.getFullName() + ". You can now sign in as '"
                     + u.getUsername() + "'.");
+            created = u;
             dispose();
         }));
         setSize(440, 520);
         setResizable(false);
         setLocationRelativeTo(owner);
+    }
+
+    /** The new account, or null if the dialog was cancelled. */
+    public User getCreatedUser() {
+        return created;
     }
 
     private static JComponent left(JComponent c) {

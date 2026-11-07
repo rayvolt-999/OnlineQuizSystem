@@ -18,7 +18,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 
 /** Every question of an attempt with the student's answer, the correct answer, hint usage and an explanation. */
 public class ReviewPanel extends JPanel {
@@ -92,12 +91,9 @@ public class ReviewPanel extends JPanel {
         box.setOpaque(false);
         box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
 
-        JPanel head = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        head.setOpaque(false);
-        head.add(Theme.label("Q" + number, Theme.HEADING, Theme.TEXT));
-        head.add(new Chip(tag, edge, Color.WHITE));
-        if (q.getSubtopicName() != null) head.add(Chip.soft(q.getSubtopicName(), Theme.INDIGO));
-        if (a.isHintUsed()) head.add(Chip.soft("Hint used", Theme.AMBER));
+        JPanel head = UiUtil.row(8, Theme.label("Q" + number, Theme.HEADING, Theme.TEXT), new Chip(tag, edge, Color.WHITE),
+                q.getSubtopicName() == null ? null : Chip.soft(q.getSubtopicName(), Theme.INDIGO),
+                a.isHintUsed() ? Chip.soft("Hint used", Theme.AMBER) : null);
         box.add(UiUtil.capHeight(head));
         box.add(Box.createVerticalStrut(10));
         box.add(UiUtil.capHeight(UiUtil.textBlock(q.getText(), Theme.BODY_BOLD, Theme.TEXT)));

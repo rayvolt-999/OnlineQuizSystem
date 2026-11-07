@@ -71,6 +71,7 @@ public class SubjectPanel extends JPanel {
         add(body, BorderLayout.CENTER);
 
         start.addActionListener(e -> frame.startQuiz(subject, selectedTopic, selectedMode));
+        UiUtil.relayoutLater(this);
         selectTopic(-1);
         selectMode(Difficulty.EASY);
     }
@@ -163,21 +164,25 @@ public class SubjectPanel extends JPanel {
         facts.add(Box.createVerticalStrut(6));
         facts.add(bigFact(com.quiz.service.AdminService.fmt(d.getMarks()), d.getMarks() == 1 ? "mark each" : "marks each", c));
         facts.add(Box.createVerticalStrut(14));
-        JLabel focus = Theme.label(UiUtil.wrap(d.getFocus(), 170), Theme.BODY_BOLD, Theme.TEXT);
-        focus.setAlignmentX(LEFT_ALIGNMENT);
-        facts.add(focus);
+        // text areas re-wrap to the card's real width, so nothing is cut off on a small window
+        facts.add(UiUtil.capHeight(UiUtil.textBlock(d.getFocus(), Theme.BODY_BOLD, Theme.TEXT)));
         facts.add(Box.createVerticalStrut(4));
-        JLabel purpose = Theme.label(UiUtil.wrap(d.getPurpose(), 170), Theme.SMALL, Theme.MUTED);
-        purpose.setAlignmentX(LEFT_ALIGNMENT);
-        facts.add(purpose);
+        facts.add(UiUtil.capHeight(UiUtil.textBlock(d.getPurpose(), Theme.SMALL, Theme.MUTED)));
         facts.add(Box.createVerticalStrut(14));
         for (String point : POINTS.get(d)) {
-            JLabel l = Theme.label("<html><span style='color:" + hex(c) + "'>\u25CF</span>&nbsp; " + point + "</html>", Theme.SMALL, Theme.TEXT);
-            l.setAlignmentX(LEFT_ALIGNMENT);
-            facts.add(l);
+            JPanel row = new JPanel(new BorderLayout(6, 0));
+            row.setOpaque(false);
+            JLabel dot = Theme.label("\u25CF", Theme.SMALL, c);
+            dot.setVerticalAlignment(JLabel.TOP);
+            row.add(dot, BorderLayout.WEST);
+            row.add(UiUtil.textBlock(point, Theme.SMALL, Theme.TEXT), BorderLayout.CENTER);
+            facts.add(UiUtil.capHeight(row));
             facts.add(Box.createVerticalStrut(6));
         }
-        card.add(facts, BorderLayout.CENTER);
+        JPanel factsTop = new JPanel(new BorderLayout());   // keeps the facts at their natural height (no stretched gaps)
+        factsTop.setOpaque(false);
+        factsTop.add(facts, BorderLayout.NORTH);
+        card.add(factsTop, BorderLayout.CENTER);
 
         JLabel avail = Theme.label(" ", Theme.SMALL_BOLD, Theme.MUTED);
         availLabels.put(d, avail);
@@ -187,6 +192,7 @@ public class SubjectPanel extends JPanel {
         DashboardPanel.addMouseDeep(card, new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) { selectMode(d); }
         });
+        DashboardPanel.setCursorDeep(card, Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return card;
     }
 
@@ -240,10 +246,6 @@ public class SubjectPanel extends JPanel {
                     + com.quiz.service.AdminService.fmt(n * selectedMode.getMarks()) + " marks." + note + "</html>");
         }
         start.setEnabled(n > 0);
-    }
-
-    private static String hex(Color c) {
-        return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
     }
 
     private JComponent stepTitle(String n, String text) {

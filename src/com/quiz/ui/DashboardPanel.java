@@ -64,7 +64,6 @@ public class DashboardPanel extends JPanel {
 
         double avg = history.stream().mapToDouble(QuizResult::getPercentage).average().orElse(0);
         double best = history.stream().mapToDouble(QuizResult::getPercentage).max().orElse(0);
-        int hints = history.stream().mapToInt(QuizResult::getHintsUsed).sum();
         int questions = subjects.stream().mapToInt(Subject::getTotalQuestions).sum();
         JPanel stats = new JPanel(new GridLayout(1, 4, 16, 0));
         stats.setOpaque(false);
@@ -105,6 +104,7 @@ public class DashboardPanel extends JPanel {
             }
         }
         add(UiUtil.scroll(body), BorderLayout.CENTER);
+        UiUtil.relayoutLater(body);
 
         analytics.addActionListener(e -> frame.showAnalytics());
         results.addActionListener(e -> frame.showHistory());
@@ -128,13 +128,18 @@ public class DashboardPanel extends JPanel {
         JPanel top = new JPanel(new BorderLayout(12, 0));
         top.setOpaque(false);
         top.add(new Badge(s.getShortCode(), c, 46), BorderLayout.WEST);
-        JLabel name = Theme.label(UiUtil.wrap(s.getName(), 130), Theme.HEADING, Theme.TEXT);
-        top.add(name, BorderLayout.CENTER);
+        // text areas re-wrap to the card's real width, so nothing is clipped on smaller windows
+        JPanel nameBox = new JPanel(new java.awt.GridBagLayout());   // vertically centres the name next to the badge
+        nameBox.setOpaque(false);
+        java.awt.GridBagConstraints gc = new java.awt.GridBagConstraints();
+        gc.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gc.weightx = 1;
+        nameBox.add(UiUtil.textBlock(s.getName(), Theme.HEADING, Theme.TEXT), gc);
+        top.add(nameBox, BorderLayout.CENTER);
         card.add(top, BorderLayout.NORTH);
 
-        JLabel desc = Theme.label(UiUtil.wrap(s.getDescription() == null ? "" : s.getDescription(), 190), Theme.SMALL, Theme.MUTED);
-        desc.setVerticalAlignment(JLabel.TOP);
-        card.add(desc, BorderLayout.CENTER);
+        card.add(UiUtil.textBlock(s.getDescription() == null ? "" : s.getDescription(), Theme.SMALL, Theme.MUTED),
+                BorderLayout.CENTER);
 
         JPanel foot = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         foot.setOpaque(false);
@@ -146,12 +151,22 @@ public class DashboardPanel extends JPanel {
         MouseAdapter m = new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent e) { card.border(c, 2); }
             @Override public void mouseExited(MouseEvent e) {
-                if (!card.contains(e.getPoint())) card.border(Theme.BORDER, 1);
+                // the event may come from a child, so convert its point into the card's coordinates
+                java.awt.Point p = javax.swing.SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), card);
+                if (!card.contains(p)) card.border(Theme.BORDER, 1);
             }
             @Override public void mouseClicked(MouseEvent e) { frame.showSubject(s); }
         };
         addMouseDeep(card, m);
+        setCursorDeep(card, Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return card;
+    }
+
+    static void setCursorDeep(Component c, Cursor cursor) {
+        c.setCursor(cursor);
+        if (c instanceof java.awt.Container) {
+            for (Component k : ((java.awt.Container) c).getComponents()) setCursorDeep(k, cursor);
+        }
     }
 
     /** Child components swallow mouse events, so register the listener on the whole tree. */

@@ -83,6 +83,9 @@ public class AdminPanel extends JPanel {
 
         modeFilter.addItem(ALL + " modes");
         for (Difficulty d : Difficulty.values()) modeFilter.addItem(d);
+        subjectFilter.setPrototypeDisplayValue("Database Management Systems  ");
+        subtopicFilter.setPrototypeDisplayValue("GUI (AWT/Swing) & JDBC     ");
+        modeFilter.setPrototypeDisplayValue("All modes    ");
         reloadAll();
     }
 

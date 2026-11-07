@@ -114,6 +114,20 @@ public final class SelfTest {
         check("CSV: escaped quotes", rows.get(1).get(1).equals("he said \"hi\""));
         check("CSV: newline in quotes", rows.get(1).get(2).equals("multi\nline"));
         check("CSV: escape round-trip", CsvUtil.toLine("a,b", "q\"", "plain").equals("\"a,b\",\"q\"\"\",plain"));
+        check("CSV: formula-looking text is neutralised", CsvUtil.safeText("=HYPERLINK(\"x\")").equals("'=HYPERLINK(\"x\")")
+                && CsvUtil.safeText("@SUM(A1)").startsWith("'") && CsvUtil.safeText("-2+3").startsWith("'"));
+        check("CSV: plain text and numbers untouched", CsvUtil.safeText("Asha Rao").equals("Asha Rao")
+                && CsvUtil.safeText("-1.5").equals("-1.5") && CsvUtil.safeText("") .isEmpty());
+        java.util.Locale before = java.util.Locale.getDefault();
+        java.util.Locale.setDefault(java.util.Locale.GERMANY);
+        check("format: marks use a dot in every locale", com.quiz.service.AdminService.fmt(7.5).equals("7.50"));
+        java.util.Locale.setDefault(before);
+        System.setProperty("easy.questions", "0");
+        System.setProperty("easy.minutes", "-5");
+        check("config: question count and minutes are clamped", com.quiz.model.Difficulty.EASY.getQuestionCount() == 1
+                && com.quiz.model.Difficulty.EASY.getMinutes() == 0);
+        System.clearProperty("easy.questions");
+        System.clearProperty("easy.minutes");
     }
 
     private static final String SAMPLE_BANK = String.join("\n",
@@ -342,7 +356,8 @@ public final class SelfTest {
 
         List<TopicStat> stats = svc.subtopicStats(student);
         int attempted = stats.stream().mapToInt(TopicStat::getAttempted).sum();
-        check("analytics: per-subtopic stats cover every answered question", attempted == 10 + topic.size());
+        check("analytics: per-subtopic stats cover every answered question (skipped ones excluded)",
+                attempted == r.getCorrect() + r.getWrong() + tr.getCorrect() + tr.getWrong());
         check("analytics: weakest subtopic listed first", stats.size() < 2 || stats.get(0).getAccuracy() <= stats.get(stats.size() - 1).getAccuracy());
         User admin = new AuthService(dao.users()).login("admin", "admin123");
         check("analytics: admin sees class-wide data", svc.historyFor(admin).size() == 2);

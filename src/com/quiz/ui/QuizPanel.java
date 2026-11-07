@@ -70,8 +70,9 @@ public class QuizPanel extends JPanel {
         setBackground(Theme.BG);
 
         // ---------- app bar ----------
+        double marks = session.getDifficulty().getMarks();
         String sub = session.getDifficulty().getLabel() + " mode  •  "
-                + com.quiz.service.AdminService.fmt(session.getDifficulty().getMarks()) + " mark(s) per question"
+                + com.quiz.service.AdminService.fmt(marks) + (marks == 1 ? " mark" : " marks") + " per question"
                 + (session.getDifficulty().isHintsAllowed() ? "  •  hints available" : "");
         AppBar bar = new AppBar(session.getTitle(), sub, subjectColor, Theme.shade(subjectColor, 0.35));
         timerChip.setFont(Theme.TIMER);
@@ -82,6 +83,14 @@ public class QuizPanel extends JPanel {
         // ---------- question area ----------
         questionHolder.setBorder(Theme.pad(4, 4));
         questionScroll = UiUtil.scroll(questionHolder);
+        // option text is wrapped to a pixel width, so re-wrap it whenever the window is resized
+        questionScroll.getViewport().addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                int w = optionWrapWidth();
+                for (OptionCard c : optionCards) c.setWrapWidth(w);
+            }
+        });
         RoundPanel qCard = new RoundPanel(new BorderLayout(), Theme.CARD);
         qCard.setBorder(Theme.pad(18, 22));
         qCard.add(questionScroll, BorderLayout.CENTER);
@@ -159,6 +168,9 @@ public class QuizPanel extends JPanel {
     public void begin() {
         renderQuestion();
         timer.start();
+        // take keyboard focus so the A-D / arrow shortcuts work immediately
+        setFocusable(true);
+        requestFocusInWindow();
     }
 
     // ================================================================== rendering
@@ -172,18 +184,15 @@ public class QuizPanel extends JPanel {
         box.setOpaque(false);
         box.setLayout(new BoxLayout(box, BoxLayout.Y_AXIS));
 
-        JPanel head = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        head.setOpaque(false);
-        head.add(Theme.label("Question " + (i + 1) + " of " + session.size(), Theme.HEADING, Theme.TEXT));
-        if (q.getSubtopicName() != null) head.add(Chip.soft(q.getSubtopicName(), subjectColor));
         markedFlag = Theme.label("⚑ Marked for review", Theme.SMALL_BOLD, Theme.shade(Theme.AMBER, 0.2));
-        head.add(markedFlag);
+        JPanel head = UiUtil.row(8, Theme.label("Question " + (i + 1) + " of " + session.size(), Theme.HEADING, Theme.TEXT),
+                q.getSubtopicName() == null ? null : Chip.soft(q.getSubtopicName(), subjectColor), markedFlag);
         box.add(UiUtil.capHeight(head));
         box.add(Box.createVerticalStrut(12));
 
         box.add(UiUtil.capHeight(UiUtil.textBlock(q.getText(), Theme.QUESTION, Theme.TEXT)));
         if (q.hasCode()) {
-            box.add(UiUtil.capHeight(new CodeBlock(q.getCode(), q.getCodeLang(), 18)));
+            box.add(UiUtil.capHeight(new CodeBlock(q.getCode(), q.getCodeLang(), 18, false)));
         } else {
             box.add(Box.createVerticalStrut(12));
         }
@@ -193,7 +202,7 @@ public class QuizPanel extends JPanel {
             box.add(Box.createVerticalStrut(12));
         }
 
-        int wrap = Math.max(300, questionScroll.getViewport().getWidth() - 140);
+        int wrap = optionWrapWidth();
         for (int k = 0; k < Question.OPTION_COUNT; k++) {
             optionCards[k].setOption(q.getOption(k), q.hasCode(), wrap);
             box.add(UiUtil.capHeight(optionCards[k]));
@@ -207,6 +216,12 @@ public class QuizPanel extends JPanel {
         UiUtil.relayoutLater(questionHolder);
         SwingUtilities.invokeLater(() -> questionScroll.getVerticalScrollBar().setValue(0));
         updateState();
+    }
+
+    /** Width available for option text: the visible question area minus the letter bubble and padding. */
+    private int optionWrapWidth() {
+        int w = questionScroll.getViewport().getWidth();
+        return w <= 0 ? 600 : Math.max(240, w - 120);
     }
 
     private JComponent hintSection(Question q) {

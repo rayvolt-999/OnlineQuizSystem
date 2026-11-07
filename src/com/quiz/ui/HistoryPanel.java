@@ -30,10 +30,10 @@ public class HistoryPanel extends JPanel {
 
     private final List<QuizResult> all = new ArrayList<>();
     private final List<QuizResult> shown = new ArrayList<>();
-    private final ResultModel model = new ResultModel();
-    private final JTable table = new JTable(model);
     private final MainFrame frame;
     private final boolean admin;
+    private final ResultModel model;   // created in the constructor: its columns depend on 'admin'
+    private final JTable table;
     private final javax.swing.JLabel summary = Theme.label(" ", Theme.BODY_BOLD, Theme.TEXT);
     private final JComboBox<String> subjectFilter = new JComboBox<>();
     private final JComboBox<Object> modeFilter = new JComboBox<>();
@@ -43,6 +43,8 @@ public class HistoryPanel extends JPanel {
         this.frame = frame;
         User user = ctx.getCurrentUser();
         this.admin = user.isAdmin();
+        this.model = new ResultModel();
+        this.table = new JTable(model);
         setBackground(Theme.BG);
 
         AppBar bar = new AppBar(admin ? "All Results" : "My Results",
@@ -58,13 +60,20 @@ public class HistoryPanel extends JPanel {
         all.stream().map(QuizResult::getSubjectName).distinct().sorted().forEach(subjectFilter::addItem);
         modeFilter.addItem("All modes");
         for (Difficulty d : Difficulty.values()) modeFilter.addItem(d);
+        subjectFilter.setPrototypeDisplayValue("Database Management Systems  ");
+        modeFilter.setPrototypeDisplayValue("All modes    ");
 
         Theme.styleTable(table);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         String[] cols = model.cols;
         for (int c = 0; c < cols.length; c++) {
-            int w = cols[c].equals("Date") ? 150 : cols[c].equals("Test") ? 280 : cols[c].equals("Student") ? 150 : 80;
+            int w = cols[c].equals("Date") ? 140 : cols[c].equals("Test") ? (admin ? 200 : 250) : cols[c].equals("Student") ? 130
+                    : cols[c].equals("Mode") || cols[c].equals("Score") ? 75 : 68;
             table.getColumnModel().getColumn(c).setPreferredWidth(w);
+            // never squeeze the date or mode into "2026-11-07 1..." / "Medi..."
+            if (cols[c].equals("Date")) table.getColumnModel().getColumn(c).setMinWidth(138);
+            if (cols[c].equals("Mode")) table.getColumnModel().getColumn(c).setMinWidth(70);
+            if (w == 68) table.getColumnModel().getColumn(c).setMinWidth(64);   // "Percent", "Correct", "Skipped" headers stay readable
         }
         table.addMouseListener(new MouseAdapter() {
             @Override

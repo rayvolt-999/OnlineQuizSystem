@@ -182,7 +182,15 @@ public final class Theme {
         h.setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object v, boolean sel, boolean focus, int row, int col) {
-                JLabel l = (JLabel) super.getTableCellRendererComponent(table, v, false, false, row, col);
+                // show which column the table is sorted by (the custom header hides the look-and-feel arrow)
+                String arrow = "";
+                if (table.getRowSorter() != null && !table.getRowSorter().getSortKeys().isEmpty()) {
+                    javax.swing.RowSorter.SortKey k = table.getRowSorter().getSortKeys().get(0);
+                    if (k.getColumn() == table.convertColumnIndexToModel(col) && k.getSortOrder() != javax.swing.SortOrder.UNSORTED) {
+                        arrow = k.getSortOrder() == javax.swing.SortOrder.ASCENDING ? "  \u25B2" : "  \u25BC";
+                    }
+                }
+                JLabel l = (JLabel) super.getTableCellRendererComponent(table, v + arrow, false, false, row, col);
                 l.setOpaque(true);
                 l.setBackground(SOFT);
                 l.setForeground(INDIGO_DARK);
